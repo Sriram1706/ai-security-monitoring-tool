@@ -1,6 +1,6 @@
 resource "aws_ecr_repository" "backend" {
   name                 = "ai-security-backend"
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = "IMMUTABLE"
   force_delete         = true
 
   image_scanning_configuration {
@@ -10,7 +10,7 @@ resource "aws_ecr_repository" "backend" {
 
 resource "aws_ecr_repository" "frontend" {
   name                 = "ai-security-frontend"
-  image_tag_mutability = "MUTABLE"
+  image_tag_mutability = "IMMUTABLE"
   force_delete         = true
 
   image_scanning_configuration {

@@ -38,6 +38,12 @@ resource "aws_instance" "ecs_node" {
   key_name               = var.key_pair_name
   vpc_security_group_ids = [aws_security_group.ecs_node.id]
 
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"  # enforce IMDSv2 — blocks SSRF-based credential theft
+    http_put_response_hop_limit = 1
+  }
+
   # Register with ECS cluster and prepare postgres data directory
   user_data = <<-EOF
     #!/bin/bash
