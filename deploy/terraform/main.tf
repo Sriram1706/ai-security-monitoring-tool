@@ -8,16 +8,9 @@ terraform {
     }
   }
 
-  cloud {
-    # 1. Sign up free at https://app.terraform.io
-    # 2. Create an organization and replace the value below
-    # 3. Set TF_API_TOKEN in GitHub Actions secrets
-    organization = "YOUR_TF_ORG_HERE"
-
-    workspaces {
-      name = "ai-security-monitoring"
-    }
-  }
+  # State stored locally in deploy/terraform/terraform.tfstate (gitignored)
+  # Run terraform commands from your terminal: cd deploy/terraform && terraform apply
+  backend "local" {}
 }
 
 provider "aws" {
