@@ -685,6 +685,9 @@ let allVulns = [];
 
 // ─── GitHub API ──────────────────────────────────────────────────────────────
 async function fetchAlerts() {
+  // Use pre-baked data injected at CI time (no auth needed in browser)
+  if (window.BAKED_ALERTS) return window.BAKED_ALERTS;
+  // Fallback: live API (requires auth — may fail for unauthenticated users)
   const alerts = [];
   let page = 1;
   while (true) {
