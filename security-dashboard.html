@@ -226,7 +226,7 @@ tr:hover td { background: #1c2128; cursor: pointer; }
     <div class="topbar-right">
       <span>Branch: main</span>
       <span>|</span>
-      <span>Last scan: 5 min ago</span>
+      <span id="scan-status">Fetching live data…</span>
       <button class="btn btn-primary" onclick="exportCSV()">⬇ Export CSV</button>
       <button class="btn" onclick="window.print()">🖨 Print</button>
     </div>
@@ -240,31 +240,31 @@ tr:hover td { background: #1c2128; cursor: pointer; }
       <div class="metrics">
         <div class="metric mc">
           <div class="metric-top"><span class="metric-label">Critical</span><span class="metric-icon">🔴</span></div>
-          <div class="metric-value">0</div>
+          <div class="metric-value" id="cnt-critical">—</div>
           <div class="metric-sub">No critical issues</div>
           <div class="metric-bar"><div class="metric-bar-fill" style="width:0%"></div></div>
         </div>
         <div class="metric mh">
           <div class="metric-top"><span class="metric-label">High</span><span class="metric-icon">🟠</span></div>
-          <div class="metric-value">3</div>
+          <div class="metric-value" id="cnt-high">—</div>
           <div class="metric-sub">Needs attention</div>
           <div class="metric-bar"><div class="metric-bar-fill" style="width:20%"></div></div>
         </div>
         <div class="metric mm">
           <div class="metric-top"><span class="metric-label">Medium</span><span class="metric-icon">🟡</span></div>
-          <div class="metric-value">12</div>
+          <div class="metric-value" id="cnt-medium">—</div>
           <div class="metric-sub">Review required</div>
           <div class="metric-bar"><div class="metric-bar-fill" style="width:80%"></div></div>
         </div>
         <div class="metric ml">
           <div class="metric-top"><span class="metric-label">Low</span><span class="metric-icon">🟢</span></div>
-          <div class="metric-value">3</div>
+          <div class="metric-value" id="cnt-low">—</div>
           <div class="metric-sub">Monitor</div>
           <div class="metric-bar"><div class="metric-bar-fill" style="width:20%"></div></div>
         </div>
         <div class="metric mi">
           <div class="metric-top"><span class="metric-label">Total</span><span class="metric-icon">📋</span></div>
-          <div class="metric-value">18</div>
+          <div class="metric-value" id="cnt-total">—</div>
           <div class="metric-sub">Across 5 tools</div>
           <div class="metric-bar"><div class="metric-bar-fill" style="width:100%"></div></div>
         </div>
@@ -680,30 +680,80 @@ SECRET_KEY = os.environ["JWT_SECRET_KEY"]
 </main>
 
 <script>
-// ─── Data ───────────────────────────────────────────────────────────────────
-const allVulns = [
-  {id:1,sev:'medium',type:'SAST',tool:'Bandit',issue:'URL open — unrestricted schemes',location:'routes/security.py:253',owasp:'A10:2021',fix:'Validate URL scheme',status:'open'},
-  {id:2,sev:'medium',type:'SAST',tool:'Bandit',issue:'URL open — unrestricted schemes',location:'services/threat_intel.py:88',owasp:'A10:2021',fix:'Validate URL scheme',status:'open'},
-  {id:3,sev:'medium',type:'SAST',tool:'Bandit',issue:'SQL injection via f-string query',location:'sqlite_store.py:410',owasp:'A03:2021',fix:'Use allowlist for sort fields',status:'open'},
-  {id:4,sev:'medium',type:'SAST',tool:'Bandit',issue:'SQL injection via f-string query',location:'sqlite_store.py:555',owasp:'A03:2021',fix:'Use allowlist for sort fields',status:'open'},
-  {id:5,sev:'low',type:'SAST',tool:'Bandit',issue:'Hardcoded SECRET_KEY',location:'app/config.py:3',owasp:'A02:2021',fix:'Move to env variable',status:'open'},
-  {id:6,sev:'warning',type:'SAST',tool:'Semgrep',issue:'Host Header Injection — $host in nginx',location:'frontend/nginx.conf',owasp:'A07:2021',fix:'Use $server_name',status:'open'},
-  {id:7,sev:'high',type:'SCA',tool:'pip-audit',issue:'python-multipart 0.0.9 — CVE-2024-53981',location:'0.0.9 → 0.0.26',owasp:'A06:2021',fix:'pip install python-multipart==0.0.27',status:'open'},
-  {id:8,sev:'high',type:'SCA',tool:'pip-audit',issue:'python-multipart 0.0.9 — CVE-2026-24486',location:'0.0.9 → 0.0.22',owasp:'A06:2021',fix:'pip install python-multipart==0.0.27',status:'open'},
-  {id:9,sev:'high',type:'SCA',tool:'pip-audit',issue:'python-multipart 0.0.9 — CVE-2026-40347',location:'0.0.9 → 0.0.26',owasp:'A06:2021',fix:'pip install python-multipart==0.0.27',status:'open'},
-  {id:10,sev:'medium',type:'SCA',tool:'pip-audit',issue:'python-jose 3.3.0 — CVE-2024-33663',location:'3.3.0 → 3.4.0',owasp:'A02:2021',fix:'pip install python-jose==3.5.0',status:'open'},
-  {id:11,sev:'medium',type:'SCA',tool:'pip-audit',issue:'python-jose 3.3.0 — CVE-2024-33664',location:'3.3.0 → 3.4.0',owasp:'A02:2021',fix:'pip install python-jose==3.5.0',status:'open'},
-  {id:12,sev:'medium',type:'SCA',tool:'pip-audit',issue:'starlette 0.38.6 — CVE-2024-47874',location:'0.38.6 → 0.40.0',owasp:'A06:2021',fix:'pip install starlette==0.47.2',status:'open'},
-  {id:13,sev:'medium',type:'SCA',tool:'pip-audit',issue:'starlette 0.38.6 — CVE-2025-54121',location:'0.38.6 → 0.47.2',owasp:'A06:2021',fix:'pip install starlette==0.47.2',status:'open'},
-  {id:14,sev:'low',type:'SCA',tool:'pip-audit',issue:'python-dotenv 1.2.1 — CVE-2026-28684',location:'1.2.1 → 1.2.2',owasp:'A06:2021',fix:'pip install python-dotenv==1.2.2',status:'open'},
-  {id:15,sev:'high',type:'SCA',tool:'npm audit',issue:'lodash — Code Injection + Prototype Pollution',location:'frontend/package.json',owasp:'A06:2021',fix:'npm audit fix',status:'open'},
-  {id:16,sev:'medium',type:'SCA',tool:'npm audit',issue:'axios — SSRF + metadata exfiltration',location:'frontend/package.json',owasp:'A10:2021',fix:'npm audit fix',status:'open'},
-  {id:17,sev:'medium',type:'SCA',tool:'npm audit',issue:'vite/esbuild — dev server exposure',location:'frontend/package.json',owasp:'A05:2021',fix:'npm audit fix --force',status:'open'},
-  {id:18,sev:'medium',type:'SCA',tool:'npm audit',issue:'follow-redirects — auth header leak',location:'frontend/package.json',owasp:'A02:2021',fix:'npm audit fix',status:'open'},
-  {id:19,sev:'medium',type:'SCA',tool:'npm audit',issue:'postcss — XSS via CSS stringify',location:'frontend/package.json',owasp:'A03:2021',fix:'npm audit fix',status:'open'},
-];
+const REPO = 'Sriram1706/ai-security-monitoring-tool';
+let allVulns = [];
 
-// ─── Navigation ─────────────────────────────────────────────────────────────
+// ─── GitHub API ──────────────────────────────────────────────────────────────
+async function fetchAlerts() {
+  const alerts = [];
+  let page = 1;
+  while (true) {
+    const r = await fetch(`https://api.github.com/repos/${REPO}/code-scanning/alerts?state=open&per_page=100&page=${page}`);
+    if (!r.ok) throw new Error(`GitHub API ${r.status}: ${r.statusText}`);
+    const data = await r.json();
+    alerts.push(...data);
+    if (data.length < 100) break;
+    page++;
+  }
+  return alerts;
+}
+
+function toolType(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('zap')) return 'DAST';
+  if (n.includes('checkov')) return 'IaC';
+  if (n.includes('trivy') || n.includes('snyk')) return 'SCA';
+  return 'SAST';
+}
+
+function mapAlert(a) {
+  const file = a.most_recent_instance?.location?.path || '';
+  const line = a.most_recent_instance?.location?.start_line;
+  return {
+    id: a.number,
+    sev: a.rule?.severity || 'note',
+    type: toolType(a.tool?.name),
+    tool: a.tool?.name || 'Unknown',
+    issue: a.rule?.description || a.rule?.name || '—',
+    location: line ? `${file}:${line}` : file,
+    owasp: '',
+    fix: 'Review required',
+    status: a.state,
+    url: a.html_url,
+  };
+}
+
+// ─── Charts ──────────────────────────────────────────────────────────────────
+Chart.defaults.color = '#8b949e';
+
+const chartSeverity = new Chart(document.getElementById('chartSeverity'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Critical','High','Medium','Low/Warning'],
+    datasets: [{ data: [0,0,0,0], backgroundColor: ['#f85149','#ff7b72','#e3b341','#3fb950'], borderWidth: 0, hoverOffset: 6 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
+});
+
+const chartTools = new Chart(document.getElementById('chartTools'), {
+  type: 'bar',
+  data: {
+    labels: [],
+    datasets: [{ label: 'Findings', data: [], backgroundColor: '#58a6ff', borderRadius: 4, borderSkipped: false }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#21262d' } }, y: { grid: { color: '#21262d' }, ticks: { stepSize: 1 } } } }
+});
+
+const chartCategory = new Chart(document.getElementById('chartCategory'), {
+  type: 'doughnut',
+  data: {
+    labels: ['SCA','SAST','DAST','IaC'],
+    datasets: [{ data: [0,0,0,0], backgroundColor: ['#d2a8ff','#58a6ff','#3fb950','#ffa657'], borderWidth: 0, hoverOffset: 6 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
+});
+
+// ─── Navigation ──────────────────────────────────────────────────────────────
 function showPage(id, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -721,7 +771,6 @@ function showTab(id, el) {
   el.classList.add('active');
 }
 
-// ─── Detail toggle ───────────────────────────────────────────────────────────
 function toggleDetail(id) {
   const el = document.getElementById(id);
   if (el) el.classList.toggle('open');
@@ -729,22 +778,24 @@ function toggleDetail(id) {
 
 // ─── All Vulns Table ─────────────────────────────────────────────────────────
 function sevClass(s) {
+  if(s==='critical') return 'sev-high';
   if(s==='high') return 'sev-high'; if(s==='medium') return 'sev-medium';
   if(s==='low') return 'sev-low'; if(s==='warning') return 'sev-warning';
   return 'sev-info';
 }
+
 function renderAllTable(data) {
   const tbody = document.getElementById('tbodyAll');
-  if(!data.length){ tbody.innerHTML=`<tr><td colspan="9"><div class="no-results">No vulnerabilities match your filters.</div></td></tr>`; return; }
-  tbody.innerHTML = data.map((v,i) => `
+  if (!data.length) { tbody.innerHTML = `<tr><td colspan="9"><div class="no-results">No open alerts found.</div></td></tr>`; return; }
+  tbody.innerHTML = data.map(v => `
     <tr>
       <td style="color:var(--text-muted)">${v.id}</td>
       <td><span class="sev ${sevClass(v.sev)}">${v.sev.toUpperCase()}</span></td>
       <td><span class="type-badge type-${v.type.toLowerCase()}">${v.type}</span></td>
       <td style="color:var(--text-muted);font-size:11px">${v.tool}</td>
-      <td><span class="issue-title">${v.issue}</span></td>
+      <td><span class="issue-title">${v.url ? `<a href="${v.url}" target="_blank" style="color:inherit;text-decoration:none">${v.issue}</a>` : v.issue}</span></td>
       <td><span class="file">${v.location}</span></td>
-      <td><span class="owasp-tag">${v.owasp}</span></td>
+      <td><span class="owasp-tag">${v.owasp || '—'}</span></td>
       <td><span class="fix-ver">${v.fix}</span></td>
       <td><span class="status status-open">Open</span></td>
     </tr>`).join('');
@@ -754,60 +805,73 @@ function filterAll() {
   const search = document.getElementById('searchAll').value.toLowerCase();
   const sev = document.getElementById('filterSev').value;
   const type = document.getElementById('filterType').value;
-  const status = document.getElementById('filterStatus').value;
-  const filtered = allVulns.filter(v => {
-    return (!search || v.issue.toLowerCase().includes(search) || v.tool.toLowerCase().includes(search) || v.location.toLowerCase().includes(search))
-      && (!sev || v.sev === sev)
-      && (!type || v.type === type)
-      && (!status || v.status === status);
-  });
+  const filtered = allVulns.filter(v =>
+    (!search || v.issue.toLowerCase().includes(search) || v.tool.toLowerCase().includes(search) || v.location.toLowerCase().includes(search))
+    && (!sev || v.sev === sev)
+    && (!type || v.type === type)
+  );
   renderAllTable(filtered);
 }
 
-// ─── Charts ──────────────────────────────────────────────────────────────────
-const chartDefaults = { color: '#c9d1d9', borderColor: '#30363d' };
-Chart.defaults.color = '#8b949e';
-
-new Chart(document.getElementById('chartSeverity'), {
-  type: 'doughnut',
-  data: {
-    labels: ['Critical','High','Medium','Low/Warning'],
-    datasets: [{ data: [0,3,12,3], backgroundColor: ['#f85149','#ff7b72','#e3b341','#3fb950'], borderWidth: 0, hoverOffset: 6 }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
-});
-
-new Chart(document.getElementById('chartTools'), {
-  type: 'bar',
-  data: {
-    labels: ['Bandit','Semgrep','pip-audit','npm audit'],
-    datasets: [{ label: 'Findings', data: [5,1,8,6], backgroundColor: ['#58a6ff','#58a6ff','#d2a8ff','#d2a8ff'], borderRadius: 4, borderSkipped: false }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#21262d' } }, y: { grid: { color: '#21262d' }, ticks: { stepSize: 2 } } } }
-});
-
-new Chart(document.getElementById('chartCategory'), {
-  type: 'doughnut',
-  data: {
-    labels: ['SCA','SAST','DAST','IaC'],
-    datasets: [{ data: [14,6,0,0], backgroundColor: ['#d2a8ff','#58a6ff','#3fb950','#ffa657'], borderWidth: 0, hoverOffset: 6 }]
-  },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
-});
-
 // ─── Export CSV ──────────────────────────────────────────────────────────────
 function exportCSV() {
-  const headers = ['ID','Severity','Type','Tool','Issue','Location','OWASP','Fix','Status'];
-  const rows = allVulns.map(v => [v.id,v.sev,v.type,v.tool,`"${v.issue}"`,`"${v.location}"`,v.owasp,`"${v.fix}"`,v.status]);
+  const headers = ['ID','Severity','Type','Tool','Issue','Location','Fix','Status'];
+  const rows = allVulns.map(v => [v.id, v.sev, v.type, v.tool, `"${v.issue}"`, `"${v.location}"`, `"${v.fix}"`, v.status]);
   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'security-report-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.download = 'security-report-' + new Date().toISOString().slice(0, 10) + '.csv';
   a.click();
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
-renderAllTable(allVulns);
+// ─── Live data init ───────────────────────────────────────────────────────────
+async function init() {
+  const status = document.getElementById('scan-status');
+  try {
+    const raw = await fetchAlerts();
+    allVulns = raw.map(mapAlert);
+
+    const c = { critical: 0, high: 0, medium: 0, low: 0 };
+    allVulns.forEach(v => {
+      if (v.sev === 'critical') c.critical++;
+      else if (v.sev === 'high') c.high++;
+      else if (v.sev === 'medium') c.medium++;
+      else c.low++;
+    });
+
+    document.getElementById('cnt-critical').textContent = c.critical;
+    document.getElementById('cnt-high').textContent = c.high;
+    document.getElementById('cnt-medium').textContent = c.medium;
+    document.getElementById('cnt-low').textContent = c.low;
+    document.getElementById('cnt-total').textContent = allVulns.length;
+
+    chartSeverity.data.datasets[0].data = [c.critical, c.high, c.medium, c.low];
+    chartSeverity.update();
+
+    const byTool = {};
+    allVulns.forEach(v => { byTool[v.tool] = (byTool[v.tool] || 0) + 1; });
+    chartTools.data.labels = Object.keys(byTool);
+    chartTools.data.datasets[0].data = Object.values(byTool);
+    chartTools.data.datasets[0].backgroundColor = Object.keys(byTool).map(t =>
+      toolType(t) === 'SCA' ? '#d2a8ff' : toolType(t) === 'DAST' ? '#3fb950' : toolType(t) === 'IaC' ? '#ffa657' : '#58a6ff'
+    );
+    chartTools.update();
+
+    const byCat = { SCA: 0, SAST: 0, DAST: 0, IaC: 0 };
+    allVulns.forEach(v => { byCat[v.type] = (byCat[v.type] || 0) + 1; });
+    chartCategory.data.datasets[0].data = [byCat.SCA, byCat.SAST, byCat.DAST, byCat.IaC];
+    chartCategory.update();
+
+    status.textContent = `Live · ${allVulns.length} open alerts · ${new Date().toLocaleString()}`;
+    renderAllTable(allVulns);
+  } catch (err) {
+    status.style.color = 'var(--critical)';
+    status.textContent = `Error: ${err.message}`;
+    renderAllTable([]);
+  }
+}
+
+init();
 </script>
 </body>
 </html>
