@@ -250,7 +250,7 @@ def _safe_fetch_url_content(url: str) -> str:
         raise ValueError("Only http/https URLs are allowed")
 
     req = request.Request(url, headers={"User-Agent": "ai-security-monitor/1.0"})
-    with request.urlopen(req, timeout=max(1, settings.url_fetch_timeout_sec)) as resp:
+    with request.urlopen(req, timeout=max(1, settings.url_fetch_timeout_sec)) as resp:  # nosec B310 — scheme validated to http/https above; host validated against allowlist
         ctype = str(resp.headers.get("Content-Type", "")).lower()
         if not any(t in ctype for t in ("text/", "json", "xml", "html")):
             raise ValueError(f"Unsupported content-type: {ctype}")

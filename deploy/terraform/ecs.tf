@@ -9,9 +9,10 @@ resource "aws_ecs_task_definition" "app" {
 
   container_definitions = jsonencode([
     {
-      name      = "db"
-      image     = "postgres:16"
-      essential = true
+      name              = "db"
+      image             = "postgres:16"
+      essential         = true
+      memoryReservation = 256
       environment = [
         { name = "POSTGRES_DB",       value = "ai_sec" },
         { name = "POSTGRES_USER",     value = "postgres" },
@@ -39,9 +40,10 @@ resource "aws_ecs_task_definition" "app" {
       }
     },
     {
-      name      = "backend"
-      image     = "${aws_ecr_repository.backend.repository_url}:latest"
-      essential = true
+      name              = "backend"
+      image             = "${aws_ecr_repository.backend.repository_url}:latest"
+      essential         = true
+      memoryReservation = 512
       portMappings = [{ containerPort = 8000, protocol = "tcp" }]
       environment = [
         { name = "DATABASE_URL",             value = "postgresql+psycopg2://postgres:${var.db_password}@localhost:5432/ai_sec" },
@@ -65,9 +67,10 @@ resource "aws_ecs_task_definition" "app" {
       }
     },
     {
-      name      = "frontend"
-      image     = "${aws_ecr_repository.frontend.repository_url}:latest"
-      essential = true
+      name              = "frontend"
+      image             = "${aws_ecr_repository.frontend.repository_url}:latest"
+      essential         = true
+      memoryReservation = 128
       portMappings = [{ containerPort = 80, protocol = "tcp" }]
       dependsOn = [{ containerName = "backend", condition = "START" }]
       logConfiguration = {
