@@ -217,6 +217,7 @@ jobs:
         run: |
           echo "OPENAI_API_KEY=${OPENAI_API_KEY}" > .env
           echo "THREAT_INTEL_ENABLED=false" >> .env
+          touch security.db
           cd deploy
           docker compose up -d --build db backend
           echo "Waiting for backend..."
