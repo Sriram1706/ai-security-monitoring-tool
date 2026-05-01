@@ -1,0 +1,96 @@
+{
+  "family": "ai-security-monitoring",
+  "networkMode": "host",
+  "requiresCompatibilities": ["EC2"],
+  "containerDefinitions": [
+    {
+      "name": "db",
+      "image": "postgres:16",
+      "essential": true,
+      "environment": [
+        { "name": "POSTGRES_DB",       "value": "ai_sec" },
+        { "name": "POSTGRES_USER",     "value": "postgres" },
+        { "name": "POSTGRES_PASSWORD", "value": "REPLACE_DB_PASSWORD" }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "pg-data",
+          "containerPath": "/var/lib/postgresql/data",
+          "readOnly": false
+        }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "pg_isready -U postgres -d ai_sec || exit 1"],
+        "interval": 10,
+        "timeout": 5,
+        "retries": 5,
+        "startPeriod": 15
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ai-security-monitoring",
+          "awslogs-region": "REPLACE_AWS_REGION",
+          "awslogs-stream-prefix": "db"
+        }
+      }
+    },
+    {
+      "name": "backend",
+      "image": "REPLACE_ECR_REGISTRY/ai-security-backend:REPLACE_IMAGE_TAG",
+      "essential": true,
+      "portMappings": [
+        { "containerPort": 8000, "protocol": "tcp" }
+      ],
+      "environment": [
+        { "name": "DATABASE_URL",              "value": "postgresql+psycopg2://postgres:REPLACE_DB_PASSWORD@localhost:5432/ai_sec" },
+        { "name": "JWT_SECRET",                "value": "REPLACE_JWT_SECRET" },
+        { "name": "ACCESS_TOKEN_MINUTES",      "value": "120" },
+        { "name": "BOOTSTRAP_ADMIN_EMAIL",     "value": "admin@ai-sec.local" },
+        { "name": "BOOTSTRAP_ADMIN_PASSWORD",  "value": "REPLACE_DB_PASSWORD" },
+        { "name": "SQLITE_DB_PATH",            "value": "/tmp/security.db" },
+        { "name": "OPENAI_API_KEY",            "value": "REPLACE_OPENAI_API_KEY" },
+        { "name": "THREAT_INTEL_ENABLED",      "value": "false" },
+        { "name": "SUPPLY_CHAIN_SCAN_ENABLED", "value": "true" }
+      ],
+      "dependsOn": [
+        { "containerName": "db", "condition": "HEALTHY" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ai-security-monitoring",
+          "awslogs-region": "REPLACE_AWS_REGION",
+          "awslogs-stream-prefix": "backend"
+        }
+      }
+    },
+    {
+      "name": "frontend",
+      "image": "REPLACE_ECR_REGISTRY/ai-security-frontend:REPLACE_IMAGE_TAG",
+      "essential": true,
+      "portMappings": [
+        { "containerPort": 80, "protocol": "tcp" }
+      ],
+      "dependsOn": [
+        { "containerName": "backend", "condition": "START" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ai-security-monitoring",
+          "awslogs-region": "REPLACE_AWS_REGION",
+          "awslogs-stream-prefix": "frontend"
+        }
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "pg-data",
+      "host": {
+        "sourcePath": "/data/pgdata"
+      }
+    }
+  ]
+}
