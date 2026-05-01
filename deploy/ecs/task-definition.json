@@ -12,6 +12,7 @@
         { "name": "POSTGRES_USER",     "value": "postgres" },
         { "name": "POSTGRES_PASSWORD", "value": "REPLACE_DB_PASSWORD" }
       ],
+      "memoryReservation": 256,
       "mountPoints": [
         {
           "sourceVolume": "pg-data",
@@ -39,6 +40,7 @@
       "name": "backend",
       "image": "REPLACE_ECR_REGISTRY/ai-security-backend:REPLACE_IMAGE_TAG",
       "essential": true,
+      "memoryReservation": 512,
       "portMappings": [
         { "containerPort": 8000, "protocol": "tcp" }
       ],
@@ -69,6 +71,7 @@
       "name": "frontend",
       "image": "REPLACE_ECR_REGISTRY/ai-security-frontend:REPLACE_IMAGE_TAG",
       "essential": true,
+      "memoryReservation": 128,
       "portMappings": [
         { "containerPort": 80, "protocol": "tcp" }
       ],
