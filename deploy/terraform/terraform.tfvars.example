@@ -1,0 +1,8 @@
+# Copy this to terraform.tfvars and fill in your values
+# WARNING: terraform.tfvars is gitignored — never commit real secrets
+
+aws_region     = "us-east-1"
+db_password    = "ChangeMe123!"
+jwt_secret     = "run-openssl-rand-hex-32-and-paste-here"
+openai_api_key = ""          # optional — leave empty to disable AI features
+key_pair_name  = null        # optional — set to your EC2 key pair name for SSH

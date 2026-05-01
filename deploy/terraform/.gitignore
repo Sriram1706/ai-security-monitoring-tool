@@ -1,0 +1,19 @@
+# Local Terraform state (use Terraform Cloud instead)
+*.tfstate
+*.tfstate.backup
+
+# Terraform working directory
+.terraform/
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Real tfvars with secrets
+*.tfvars
+*.tfvars.json
+
+# Plan files
+*.tfplan
+
+# NOTE: .terraform.lock.hcl is intentionally NOT ignored — commit it

@@ -53,13 +53,15 @@ Semgrep ✅ | CodeQL ✅ | Trivy ✅ | Snyk ✅ | Checkov ✅ | Gitleaks ✅ | Z
 - Enable at: github.com/Sriram1706/ai-security-monitoring-tool/settings/pages → gh-pages branch
 - URL: https://sriram1706.github.io/ai-security-monitoring-tool/
 
-## ECS Deployment (Added 2026-05-01)
+## ECS Deployment via Terraform (Added 2026-05-01)
 Full pipeline: Code Push → CI Security Checks → Auto-Deploy to AWS ECS (EC2 t2.micro, free tier)
 
 ### Files Created
-- `deploy/ecs/task-definition.json` — ECS task definition template (host networking, 3 containers)
+- `deploy/terraform/` — full Terraform IaC (ECR, IAM, ECS cluster, EC2, CloudWatch logs)
+- `deploy/ecs/task-definition.json` — ECS task definition template (used by deploy-ecs.yml)
 - `frontend/nginx.ecs.conf` — ECS nginx config (proxies `/api/` to `localhost:8000`, not `backend:8000`)
 - `frontend/Dockerfile` — now accepts `--build-arg NGINX_CONF=nginx.ecs.conf`
+- `.github/workflows/terraform.yml` — Terraform plan on PRs, apply on push to main
 - `.github/workflows/deploy-ecs.yml` — deploy workflow (auto-triggers after CI passes on main)
 
 ### How the Deploy Pipeline Works
@@ -70,31 +72,26 @@ Full pipeline: Code Push → CI Security Checks → Auto-Deploy to AWS ECS (EC2 
 5. Updates ECS service → waits for `services-stable`
 6. Prints deployed URL: `http://<EC2-public-IP>`
 
-### GitHub Secrets to Add (ECS)
+### Terraform State — Terraform Cloud (Free)
+1. Sign up at https://app.terraform.io (free)
+2. Create an organization (e.g. `sriram-devops`)
+3. Replace `YOUR_TF_ORG_HERE` in `deploy/terraform/main.tf` with your org name
+4. Create API token: User Settings → Tokens → Create an API token
+5. Add as GitHub secret: `TF_API_TOKEN`
+
+### GitHub Secrets to Add (Terraform + ECS)
 Add at: github.com/Sriram1706/ai-security-monitoring-tool/settings/secrets/actions
-- `AWS_ACCESS_KEY_ID` — IAM user `github-deployer` access key
-- `AWS_SECRET_ACCESS_KEY` — IAM user secret
+- `TF_API_TOKEN` — Terraform Cloud API token (from Step 4 above)
+- `AWS_ACCESS_KEY_ID` — root/admin AWS key (for Terraform to provision infra)
+- `AWS_SECRET_ACCESS_KEY` — root/admin AWS secret
 - `AWS_REGION` — e.g. `us-east-1`
 - `DB_PASSWORD` — Postgres password (e.g. `ChangeMe123!`)
-- `JWT_SECRET` — strong random string (run: `openssl rand -hex 32`)
+- `JWT_SECRET` — run `openssl rand -hex 32` and paste result
 
-### One-Time AWS Setup (Do This Once in AWS Console)
-1. **CloudWatch Logs** — Create log group `/ecs/ai-security-monitoring`
-2. **ECR** — Create two repos: `ai-security-backend`, `ai-security-frontend`
-3. **IAM User** — Create `github-deployer` with policies:
-   - `AmazonEC2ContainerRegistryPowerUser`
-   - Inline policy for ECS: `ecs:RegisterTaskDefinition`, `ecs:UpdateService`, `ecs:DescribeServices`, `ecs:DescribeTaskDefinition`, `ec2:DescribeInstances`
-4. **IAM Role** — Ensure `ecsInstanceRole` exists (EC2 → ECS instance role with `AmazonEC2ContainerServiceforEC2Role`)
-5. **ECS Cluster** — Create cluster `ai-security-cluster` (EC2 Linux launch type)
-6. **EC2 Instance** — Launch t2.micro:
-   - AMI: ECS-optimized Amazon Linux 2 (search "amzn2-ami-ecs-hvm" in Community AMIs)
-   - IAM role: `ecsInstanceRole`
-   - User data: `#!/bin/bash\necho ECS_CLUSTER=ai-security-cluster >> /etc/ecs/ecs.config`
-   - Tag: `Name=ecs-ai-security`
-   - Security Group: allow inbound TCP 22 (SSH) and 80 (HTTP) from `0.0.0.0/0`
-7. **Host data dir** — SSH into EC2 and run:
-   `sudo mkdir -p /data/pgdata && sudo chown 999:999 /data/pgdata`
-8. **ECS Service** — After EC2 joins cluster, register task def once via AWS CLI or console, then create service `ai-security-service` (`desiredCount: 1`, EC2 launch type)
+After first `terraform apply`, update the two AWS secrets with the narrower `github-deployer` keys output by Terraform.
+
+### No Manual AWS Console Steps Needed
+All AWS resources (ECR, IAM, ECS cluster, EC2, CloudWatch) are provisioned automatically by `terraform apply` when you push to `deploy/terraform/**`.
 
 ### ECS Architecture Notes
 - Network mode: `host` — all containers share EC2 network namespace, talk via `localhost`

@@ -1,0 +1,68 @@
+name: Terraform
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "deploy/terraform/**"
+      - ".github/workflows/terraform.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "deploy/terraform/**"
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: Terraform Plan & Apply
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: deploy/terraform
+
+    env:
+      TF_API_TOKEN:             ${{ secrets.TF_API_TOKEN }}
+      AWS_ACCESS_KEY_ID:        ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY:    ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      TF_VAR_aws_region:        ${{ secrets.AWS_REGION }}
+      TF_VAR_db_password:       ${{ secrets.DB_PASSWORD }}
+      TF_VAR_jwt_secret:        ${{ secrets.JWT_SECRET }}
+      TF_VAR_openai_api_key:    ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Plan
+        run: terraform plan -no-color
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
+
+      # Only apply on push to main (not on PRs)
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: terraform apply -auto-approve -no-color
+
+      - name: Show Outputs
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          echo "========================================"
+          echo "  EC2 Public IP: $(terraform output -raw ec2_public_ip)"
+          echo "  ECR Registry:  $(terraform output -raw ecr_registry)"
+          echo "========================================"
+          echo ""
+          echo "Add these to GitHub Actions secrets:"
+          echo "  AWS_ACCESS_KEY_ID = $(terraform output -raw github_deployer_access_key_id)"
+          echo "  AWS_SECRET_ACCESS_KEY = (run: terraform output github_deployer_secret_access_key)"
