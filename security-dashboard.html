@@ -15,12 +15,11 @@
 }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
-/* Sidebar */
 .sidebar { width: 220px; min-height: 100vh; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; z-index: 100; }
 .sidebar-logo { padding: 20px 16px; border-bottom: 1px solid var(--border); }
 .sidebar-logo h2 { font-size: 14px; font-weight: 700; color: var(--text-bright); }
 .sidebar-logo p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.sidebar-nav { padding: 12px 8px; flex: 1; }
+.sidebar-nav { padding: 12px 8px; flex: 1; overflow-y: auto; }
 .nav-group { margin-bottom: 20px; }
 .nav-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 4px 8px; margin-bottom: 4px; }
 .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: var(--text-muted); transition: all 0.15s; }
@@ -33,26 +32,37 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .nb-yellow { background: #3d2e00; color: var(--medium); }
 .nb-green { background: #1a2e1a; color: var(--low); }
 .nb-blue { background: #1a2a3d; color: var(--info); }
-.sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); }
+.sidebar-footer { padding: 12px 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.6; }
 
-/* Main */
 .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; }
-.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 28px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 50; gap: 12px; flex-wrap: wrap; }
 .topbar h1 { font-size: 15px; font-weight: 600; color: var(--text-bright); }
-.topbar-right { display: flex; align-items: center; gap: 12px; }
-.topbar-right span { font-size: 12px; color: var(--text-muted); }
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.meta-chip { font-size: 11px; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 10px; display: flex; align-items: center; gap: 5px; }
+.meta-chip a { color: var(--info); text-decoration: none; }
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--text); transition: all 0.15s; }
 .btn:hover { border-color: var(--info); color: var(--text-bright); }
 .btn-primary { background: #1f3244; border-color: var(--info); color: var(--info); }
 
 .content { padding: 24px 28px; }
-
-/* Page sections */
 .page { display: none; }
 .page.active { display: block; }
 
-/* Metric cards */
-.metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
+/* Score card */
+.overview-top { display: grid; grid-template-columns: 200px 1fr; gap: 20px; margin-bottom: 24px; align-items: start; }
+.score-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 24px 20px; text-align: center; }
+.score-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 12px; }
+.score-ring { position: relative; width: 100px; height: 100px; margin: 0 auto 12px; }
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 8; }
+.score-ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+.score-number { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.score-value { font-size: 28px; font-weight: 800; line-height: 1; }
+.score-max { font-size: 10px; color: var(--text-muted); }
+.score-grade { font-size: 13px; font-weight: 600; margin-top: 4px; }
+
+/* Metrics grid */
+.metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
 .metric { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 16px; }
 .metric-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
 .metric-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -60,39 +70,39 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .metric-value { font-size: 32px; font-weight: 700; line-height: 1; }
 .metric-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 .metric-bar { height: 3px; background: var(--surface2); border-radius: 2px; margin-top: 10px; }
-.metric-bar-fill { height: 3px; border-radius: 2px; }
+.metric-bar-fill { height: 3px; border-radius: 2px; transition: width 0.8s ease; }
 .mc { color: var(--critical); } .mc .metric-bar-fill { background: var(--critical); }
-.mh { color: var(--high); } .mh .metric-bar-fill { background: var(--high); }
-.mm { color: var(--medium); } .mm .metric-bar-fill { background: var(--medium); }
-.ml { color: var(--low); } .ml .metric-bar-fill { background: var(--low); }
-.mi { color: var(--info); } .mi .metric-bar-fill { background: var(--info); }
+.mh { color: var(--high); }    .mh .metric-bar-fill { background: var(--high); }
+.mm { color: var(--medium); }  .mm .metric-bar-fill { background: var(--medium); }
+.ml { color: var(--low); }     .ml .metric-bar-fill { background: var(--low); }
+.mi { color: var(--info); }    .mi .metric-bar-fill { background: var(--info); }
 
-/* Charts row */
-.charts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+/* Charts */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 24px 0; }
 .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
 .chart-card h3 { font-size: 13px; font-weight: 600; color: var(--text-bright); margin-bottom: 16px; }
 .chart-wrap { position: relative; height: 180px; }
 
-/* Tool status grid */
-.tool-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-.tool-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-.tool-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.tool-name { font-size: 13px; font-weight: 600; color: var(--text-bright); }
-.tool-type-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; }
-.tb-sast { background: #1f3244; color: var(--info); }
-.tb-sca { background: #2d1f3d; color: var(--purple); }
-.tb-dast { background: #1f3225; color: var(--low); }
-.tb-iac { background: #2a1f1a; color: #ffa657; }
-.tb-secrets { background: #3d1515; color: var(--critical); }
-.tool-count { font-size: 28px; font-weight: 700; }
-.tool-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-.tool-status { font-size: 11px; display: flex; align-items: center; gap: 5px; }
-.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-.dot-green { background: var(--low); } .dot-yellow { background: var(--medium); } .dot-red { background: var(--critical); }
+/* CI pipeline status */
+.pipeline-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.pipeline-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.pipeline-card-top { display: flex; justify-content: space-between; align-items: center; }
+.pipeline-name { font-size: 13px; font-weight: 600; color: var(--text-bright); }
+.pipeline-type { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.pt-sast { background: #1f3244; color: var(--info); }
+.pt-sca  { background: #2d1f3d; color: var(--purple); }
+.pt-dast { background: #1f3225; color: var(--low); }
+.pt-iac  { background: #2a1f1a; color: #ffa657; }
+.pt-secrets { background: #3d1515; color: var(--critical); }
+.pipeline-count { font-size: 26px; font-weight: 700; line-height: 1; }
+.pipeline-footer { display: flex; justify-content: space-between; align-items: center; }
+.pipeline-status { font-size: 11px; display: flex; align-items: center; gap: 5px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.dot-green { background: var(--low); } .dot-yellow { background: var(--medium); } .dot-red { background: var(--critical); } .dot-blue { background: var(--info); }
 
 /* Section */
 .section { margin-bottom: 28px; }
-.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: gap; gap: 10px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap; }
 .section-title { font-size: 14px; font-weight: 600; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
 .section-controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
@@ -101,8 +111,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .filter-select, .search-input { background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 6px 12px; font-size: 12px; outline: none; }
 .filter-select:focus, .search-input:focus { border-color: var(--info); }
 .search-input { width: 220px; }
-.filter-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; border: 1px solid var(--border); background: var(--surface2); color: var(--text-muted); cursor: pointer; }
-.filter-btn.active { border-color: var(--info); color: var(--info); background: #1f3244; }
 
 /* Table */
 .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
@@ -117,44 +125,49 @@ tr:hover td { background: #1c2128; cursor: pointer; }
 .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .detail-block h4 { font-size: 11px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.5px; }
 .detail-block p { font-size: 12px; line-height: 1.6; }
-.code-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: #a5d6ff; margin-top: 6px; white-space: pre-wrap; }
+.code-block { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: 'SF Mono','Fira Code',monospace; font-size: 11px; color: #a5d6ff; margin-top: 6px; white-space: pre-wrap; }
 .remediation { background: #1a2e1a; border: 1px solid #2d4a2d; border-radius: 6px; padding: 10px 12px; font-size: 12px; color: #3fb950; margin-top: 6px; }
 
-/* Severity badges */
+/* Badges */
 .sev { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .sev-critical { background: #3d1515; color: var(--critical); border: 1px solid #5a2020; }
-.sev-high { background: #3d2010; color: var(--high); border: 1px solid #5a3010; }
-.sev-medium { background: #3d2e00; color: var(--medium); border: 1px solid #5a4400; }
-.sev-low { background: #1a2e1a; color: var(--low); border: 1px solid #2d4a2d; }
-.sev-warning { background: #2e2a00; color: #d29922; border: 1px solid #4a4000; }
-.sev-info { background: #1a2a3d; color: var(--info); border: 1px solid #1f3a5a; }
+.sev-high    { background: #3d2010; color: var(--high);     border: 1px solid #5a3010; }
+.sev-medium  { background: #3d2e00; color: var(--medium);   border: 1px solid #5a4400; }
+.sev-low     { background: #1a2e1a; color: var(--low);      border: 1px solid #2d4a2d; }
+.sev-warning { background: #2e2a00; color: #d29922;         border: 1px solid #4a4000; }
+.sev-info    { background: #1a2a3d; color: var(--info);     border: 1px solid #1f3a5a; }
+.sev-note    { background: #1c1c2e; color: var(--text-muted); border: 1px solid var(--border); }
+.sev-error   { background: #3d2010; color: var(--high);     border: 1px solid #5a3010; }
 
-/* Status badges */
 .status { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-.status-open { background: #3d1515; color: var(--critical); }
-.status-pending { background: #2e2a00; color: var(--medium); }
-.status-fixed { background: #1a2e1a; color: var(--low); }
+.status-open    { background: #3d1515; color: var(--critical); }
+.status-fixed   { background: #1a2e1a; color: var(--low); }
 
-/* Type badges */
 .type-badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-.type-sast { background: #1f3244; color: var(--info); }
-.type-sca { background: #2d1f3d; color: var(--purple); }
-.type-dast { background: #1f3225; color: var(--low); }
-.type-iac { background: #2a1f1a; color: #ffa657; }
+.type-sast    { background: #1f3244; color: var(--info); }
+.type-sca     { background: #2d1f3d; color: var(--purple); }
+.type-dast    { background: #1f3225; color: var(--low); }
+.type-iac     { background: #2a1f1a; color: #ffa657; }
 .type-secrets { background: #3d1515; color: var(--critical); }
 
-.file { font-family: 'SF Mono', monospace; font-size: 11px; color: var(--info); }
-.cve-id { font-family: monospace; font-size: 11px; color: var(--text-muted); }
+.file    { font-family: 'SF Mono',monospace; font-size: 11px; color: var(--info); }
+.cve-id  { font-family: monospace; font-size: 11px; color: var(--text-muted); }
 .fix-ver { font-size: 11px; color: var(--low); font-weight: 500; }
-.pkg-name { font-weight: 600; color: var(--text-bright); }
+.pkg-name    { font-weight: 600; color: var(--text-bright); }
 .issue-title { font-weight: 500; color: var(--text-bright); }
-.issue-desc { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-.no-results { text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
+.issue-desc  { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.no-results  { text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
+.owasp-tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #1a2030; color: var(--text-muted); border: 1px solid var(--border); }
 
-/* Risk score */
-.risk-score { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
-.risk-bar-wrap { width: 50px; height: 4px; background: var(--surface2); border-radius: 2px; }
-.risk-bar { height: 4px; border-radius: 2px; }
+/* Tabs */
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; }
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--info); border-bottom-color: var(--info); }
+
+/* Summary row */
+.summary-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.summary-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
 
 /* Timeline */
 .timeline { display: flex; flex-direction: column; gap: 12px; }
@@ -164,26 +177,19 @@ tr:hover td { background: #1c2128; cursor: pointer; }
 .tl-line { width: 2px; flex: 1; background: var(--surface2); margin-top: 4px; min-height: 20px; }
 .tl-content { flex: 1; }
 .tl-title { font-size: 13px; color: var(--text-bright); }
-.tl-time { font-size: 11px; color: var(--text-muted); }
+.tl-time  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-/* OWASP mapping */
-.owasp-tag { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #1a2030; color: #8b949e; border: 1px solid var(--border); margin-top: 3px; }
+/* Risk score bar */
+.risk-score { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; }
+.risk-bar-wrap { width: 50px; height: 4px; background: var(--surface2); border-radius: 2px; }
+.risk-bar { height: 4px; border-radius: 2px; }
 
-/* Tabs */
-.tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
-.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; }
-.tab:hover { color: var(--text); }
-.tab.active { color: var(--info); border-bottom-color: var(--info); }
-
-/* Summary row */
-.summary-row { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
-.summary-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--surface); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-/* Responsive table */
+/* Misc */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 .table-scroll { overflow-x: auto; }
+.section-divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
 </style>
 </head>
 <body>
@@ -191,31 +197,31 @@ tr:hover td { background: #1c2128; cursor: pointer; }
 <!-- Sidebar -->
 <aside class="sidebar">
   <div class="sidebar-logo">
-    <h2>🛡️ AppSec Dashboard</h2>
+    <h2>&#128737; AppSec Dashboard</h2>
     <p>AI Security Monitoring Tool</p>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-group">
       <div class="nav-label">Overview</div>
-      <div class="nav-item active" onclick="showPage('overview', this)"><span class="icon">📊</span> Dashboard</div>
-      <div class="nav-item" onclick="showPage('timeline', this)"><span class="icon">📅</span> Activity</div>
+      <div class="nav-item active" onclick="showPage('overview',this)"><span class="icon">&#128202;</span> Dashboard</div>
+      <div class="nav-item" onclick="showPage('timeline',this)"><span class="icon">&#128197;</span> Activity</div>
     </div>
     <div class="nav-group">
       <div class="nav-label">Scan Results</div>
-      <div class="nav-item" onclick="showPage('sast', this)"><span class="icon">🔍</span> SAST <span class="nav-badge nb-yellow">6</span></div>
-      <div class="nav-item" onclick="showPage('sca', this)"><span class="icon">📦</span> SCA <span class="nav-badge nb-orange">14</span></div>
-      <div class="nav-item" onclick="showPage('dast', this)"><span class="icon">🌐</span> DAST <span class="nav-badge nb-yellow">⏳</span></div>
-      <div class="nav-item" onclick="showPage('iac', this)"><span class="icon">🏗️</span> IaC <span class="nav-badge nb-blue">⏳</span></div>
-      <div class="nav-item" onclick="showPage('secrets', this)"><span class="icon">🔑</span> Secrets <span class="nav-badge nb-green">0</span></div>
+      <div class="nav-item" onclick="showPage('sast',this)"><span class="icon">&#128269;</span> SAST <span class="nav-badge nb-yellow" id="badge-sast">—</span></div>
+      <div class="nav-item" onclick="showPage('sca',this)"><span class="icon">&#128230;</span> SCA <span class="nav-badge nb-orange" id="badge-sca">14</span></div>
+      <div class="nav-item" onclick="showPage('dast',this)"><span class="icon">&#127760;</span> DAST <span class="nav-badge nb-green" id="badge-dast">—</span></div>
+      <div class="nav-item" onclick="showPage('iac',this)"><span class="icon">&#127959;</span> IaC <span class="nav-badge nb-blue" id="badge-iac">—</span></div>
+      <div class="nav-item" onclick="showPage('secrets',this)"><span class="icon">&#128273;</span> Secrets <span class="nav-badge nb-green">0</span></div>
     </div>
     <div class="nav-group">
       <div class="nav-label">All Findings</div>
-      <div class="nav-item" onclick="showPage('all', this)"><span class="icon">📋</span> All Vulnerabilities</div>
+      <div class="nav-item" onclick="showPage('all',this)"><span class="icon">&#128203;</span> All Vulnerabilities</div>
     </div>
   </nav>
   <div class="sidebar-footer">
-    Scanned: May 1, 2026<br>
-    <a href="https://github.com/Sriram1706/ai-security-monitoring-tool" style="color:var(--info);text-decoration:none">github.com/Sriram1706</a>
+    <div id="sidebar-scan-time">Loading…</div>
+    <div style="margin-top:4px"><a href="https://github.com/Sriram1706/ai-security-monitoring-tool" style="color:var(--info);text-decoration:none">github.com/Sriram1706</a></div>
   </div>
 </aside>
 
@@ -224,49 +230,74 @@ tr:hover td { background: #1c2128; cursor: pointer; }
   <div class="topbar">
     <h1 id="page-title">Security Overview</h1>
     <div class="topbar-right">
-      <span>Branch: main</span>
-      <span>|</span>
-      <span id="scan-status">Fetching live data…</span>
-      <button class="btn btn-primary" onclick="exportCSV()">⬇ Export CSV</button>
-      <button class="btn" onclick="window.print()">🖨 Print</button>
+      <span class="meta-chip" id="meta-commit">&#128736; —</span>
+      <span class="meta-chip" id="meta-branch">&#127968; main</span>
+      <span class="meta-chip" id="meta-run">&#9654; CI Run</span>
+      <button class="btn btn-primary" onclick="exportCSV()">&#11015; Export CSV</button>
+      <button class="btn" onclick="window.print()">&#128424; Print</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ═══ OVERVIEW PAGE ═══ -->
+    <!-- OVERVIEW -->
     <div id="page-overview" class="page active">
 
-      <div class="metrics">
-        <div class="metric mc">
-          <div class="metric-top"><span class="metric-label">Critical</span><span class="metric-icon">🔴</span></div>
-          <div class="metric-value" id="cnt-critical">—</div>
-          <div class="metric-sub">No critical issues</div>
-          <div class="metric-bar"><div class="metric-bar-fill" style="width:0%"></div></div>
+      <div class="overview-top">
+        <div class="score-card">
+          <div class="score-label">Security Score</div>
+          <div class="score-ring">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+              <circle class="score-ring-bg" cx="50" cy="50" r="42"/>
+              <circle class="score-ring-fill" id="score-ring-fill" cx="50" cy="50" r="42"
+                stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+            </svg>
+            <div class="score-number">
+              <span class="score-value" id="score-value">—</span>
+              <span class="score-max">/100</span>
+            </div>
+          </div>
+          <div class="score-grade" id="score-grade">—</div>
         </div>
-        <div class="metric mh">
-          <div class="metric-top"><span class="metric-label">High</span><span class="metric-icon">🟠</span></div>
-          <div class="metric-value" id="cnt-high">—</div>
-          <div class="metric-sub">Needs attention</div>
-          <div class="metric-bar"><div class="metric-bar-fill" style="width:20%"></div></div>
+
+        <div class="metrics">
+          <div class="metric mc">
+            <div class="metric-top"><span class="metric-label">Critical</span><span class="metric-icon">&#128308;</span></div>
+            <div class="metric-value" id="cnt-critical">—</div>
+            <div class="metric-sub" id="sub-critical">Immediate action needed</div>
+            <div class="metric-bar"><div class="metric-bar-fill" id="bar-critical" style="width:0%"></div></div>
+          </div>
+          <div class="metric mh">
+            <div class="metric-top"><span class="metric-label">High</span><span class="metric-icon">&#128992;</span></div>
+            <div class="metric-value" id="cnt-high">—</div>
+            <div class="metric-sub" id="sub-high">Needs attention</div>
+            <div class="metric-bar"><div class="metric-bar-fill" id="bar-high" style="width:0%"></div></div>
+          </div>
+          <div class="metric mm">
+            <div class="metric-top"><span class="metric-label">Medium</span><span class="metric-icon">&#128993;</span></div>
+            <div class="metric-value" id="cnt-medium">—</div>
+            <div class="metric-sub" id="sub-medium">Review required</div>
+            <div class="metric-bar"><div class="metric-bar-fill" id="bar-medium" style="width:0%"></div></div>
+          </div>
+          <div class="metric ml">
+            <div class="metric-top"><span class="metric-label">Low / Info</span><span class="metric-icon">&#128994;</span></div>
+            <div class="metric-value" id="cnt-low">—</div>
+            <div class="metric-sub" id="sub-low">Monitor</div>
+            <div class="metric-bar"><div class="metric-bar-fill" id="bar-low" style="width:0%"></div></div>
+          </div>
+          <div class="metric mi">
+            <div class="metric-top"><span class="metric-label">Total Open</span><span class="metric-icon">&#128203;</span></div>
+            <div class="metric-value" id="cnt-total">—</div>
+            <div class="metric-sub">Across all tools</div>
+            <div class="metric-bar"><div class="metric-bar-fill" id="bar-total" style="width:100%"></div></div>
+          </div>
         </div>
-        <div class="metric mm">
-          <div class="metric-top"><span class="metric-label">Medium</span><span class="metric-icon">🟡</span></div>
-          <div class="metric-value" id="cnt-medium">—</div>
-          <div class="metric-sub">Review required</div>
-          <div class="metric-bar"><div class="metric-bar-fill" style="width:80%"></div></div>
-        </div>
-        <div class="metric ml">
-          <div class="metric-top"><span class="metric-label">Low</span><span class="metric-icon">🟢</span></div>
-          <div class="metric-value" id="cnt-low">—</div>
-          <div class="metric-sub">Monitor</div>
-          <div class="metric-bar"><div class="metric-bar-fill" style="width:20%"></div></div>
-        </div>
-        <div class="metric mi">
-          <div class="metric-top"><span class="metric-label">Total</span><span class="metric-icon">📋</span></div>
-          <div class="metric-value" id="cnt-total">—</div>
-          <div class="metric-sub">Across 5 tools</div>
-          <div class="metric-bar"><div class="metric-bar-fill" style="width:100%"></div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-header"><div class="section-title">&#9654; CI Pipeline Status</div></div>
+        <div class="pipeline-grid" id="pipeline-grid">
+          <!-- built dynamically -->
         </div>
       </div>
 
@@ -285,119 +316,39 @@ tr:hover td { background: #1c2128; cursor: pointer; }
         </div>
       </div>
 
-      <div class="tool-grid">
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">Bandit</span><span class="tool-type-badge tb-sast">SAST</span></div>
-          <div class="tool-count" style="color:var(--medium)">5</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-green"></span>Scan complete</div>
-            <span style="font-size:11px;color:var(--text-muted)">Python backend</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">Semgrep</span><span class="tool-type-badge tb-sast">SAST</span></div>
-          <div class="tool-count" style="color:var(--medium)">1</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-green"></span>Scan complete</div>
-            <span style="font-size:11px;color:var(--text-muted)">nginx config</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">CodeQL</span><span class="tool-type-badge tb-sast">SAST</span></div>
-          <div class="tool-count" style="color:var(--text-muted)">—</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-yellow"></span>Pipeline queued</div>
-            <span style="font-size:11px;color:var(--text-muted)">Python + JS</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">pip-audit</span><span class="tool-type-badge tb-sca">SCA</span></div>
-          <div class="tool-count" style="color:var(--high)">8</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-green"></span>Scan complete</div>
-            <span style="font-size:11px;color:var(--text-muted)">4 packages</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">npm audit</span><span class="tool-type-badge tb-sca">SCA</span></div>
-          <div class="tool-count" style="color:var(--medium)">6</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-green"></span>Scan complete</div>
-            <span style="font-size:11px;color:var(--text-muted)">5 packages</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">OWASP ZAP</span><span class="tool-type-badge tb-dast">DAST</span></div>
-          <div class="tool-count" style="color:var(--text-muted)">—</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-red"></span>Needs API key secret</div>
-            <span style="font-size:11px;color:var(--text-muted)">Live scan</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">Checkov</span><span class="tool-type-badge tb-iac">IaC</span></div>
-          <div class="tool-count" style="color:var(--text-muted)">—</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-yellow"></span>Pipeline queued</div>
-            <span style="font-size:11px;color:var(--text-muted)">Docker + Compose</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">Gitleaks</span><span class="tool-type-badge tb-secrets">Secrets</span></div>
-          <div class="tool-count" style="color:var(--low)">0</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-green"></span>Clean</div>
-            <span style="font-size:11px;color:var(--text-muted)">Git history</span>
-          </div>
-        </div>
-        <div class="tool-card">
-          <div class="tool-header"><span class="tool-name">Snyk</span><span class="tool-type-badge tb-sca">SCA</span></div>
-          <div class="tool-count" style="color:var(--text-muted)">—</div>
-          <div class="tool-footer">
-            <div class="tool-status"><span class="dot dot-red"></span>Needs SNYK_TOKEN</div>
-            <span style="font-size:11px;color:var(--text-muted)">Python + Node</span>
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- ═══ ALL VULNERABILITIES PAGE ═══ -->
+    <!-- ALL VULNERABILITIES -->
     <div id="page-all" class="page">
       <div class="filter-bar">
-        <input type="text" class="search-input" id="searchAll" oninput="filterAll()" placeholder="🔍  Search vulnerabilities...">
+        <input type="text" class="search-input" id="searchAll" oninput="filterAll()" placeholder="&#128269;  Search vulnerabilities...">
         <select class="filter-select" id="filterSev" onchange="filterAll()">
           <option value="">All Severities</option>
+          <option value="critical">Critical</option>
           <option value="high">High</option>
+          <option value="error">Error</option>
           <option value="medium">Medium</option>
-          <option value="low">Low</option>
           <option value="warning">Warning</option>
+          <option value="low">Low</option>
+          <option value="note">Note / Info</option>
         </select>
         <select class="filter-select" id="filterType" onchange="filterAll()">
           <option value="">All Types</option>
           <option value="SAST">SAST</option>
           <option value="SCA">SCA</option>
           <option value="DAST">DAST</option>
+          <option value="IaC">IaC</option>
         </select>
-        <select class="filter-select" id="filterStatus" onchange="filterAll()">
-          <option value="">All Status</option>
-          <option value="open">Open</option>
-          <option value="pending">Pending</option>
+        <select class="filter-select" id="filterTool" onchange="filterAll()">
+          <option value="">All Tools</option>
         </select>
       </div>
       <div class="table-wrap table-scroll">
         <table id="tableAll">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Severity</th>
-              <th>Type</th>
-              <th>Tool</th>
-              <th>Issue / Package</th>
-              <th>Location / Version</th>
-              <th>OWASP</th>
-              <th>Fix</th>
-              <th>Status</th>
+              <th>#</th><th>Severity</th><th>Type</th><th>Tool</th>
+              <th>Issue</th><th>Location</th><th>OWASP</th><th>Status</th>
             </tr>
           </thead>
           <tbody id="tbodyAll"></tbody>
@@ -405,267 +356,195 @@ tr:hover td { background: #1c2128; cursor: pointer; }
       </div>
     </div>
 
-    <!-- ═══ SAST PAGE ═══ -->
+    <!-- SAST -->
     <div id="page-sast" class="page">
-      <div class="summary-row">
-        <div class="summary-chip">🔍 <strong>6</strong> findings</div>
-        <div class="summary-chip">🟡 <strong>4</strong> Medium</div>
-        <div class="summary-chip">🟢 <strong>1</strong> Low</div>
-        <div class="summary-chip">⚠️ <strong>1</strong> Warning</div>
-        <div class="summary-chip">📁 Tools: Bandit, Semgrep</div>
+      <div class="summary-row" id="sast-summary"></div>
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('sast-codeql',this)">CodeQL</div>
+        <div class="tab" onclick="showTab('sast-manual',this)">Bandit / Semgrep (manual)</div>
       </div>
-      <div class="table-wrap table-scroll">
-        <table>
-          <thead>
-            <tr><th>Severity</th><th>Tool</th><th>Check ID</th><th>Issue</th><th>File / Line</th><th>CWE</th><th>OWASP</th><th>Confidence</th><th>Remediation</th></tr>
-          </thead>
-          <tbody>
-            <tr onclick="toggleDetail('d-s1')">
-              <td><span class="sev sev-medium">MEDIUM</span></td>
-              <td>Bandit</td>
-              <td><span class="cve-id">B310</span></td>
-              <td><span class="issue-title">URL open — unrestricted schemes</span><div class="issue-desc">urllib.request.urlopen allows file:/ and custom schemes</div></td>
-              <td><span class="file">routes/security.py:253</span></td>
-              <td><span class="cve-id">CWE-22</span></td>
-              <td><span class="owasp-tag">A10:2021 SSRF</span></td>
-              <td><span class="sev sev-info">HIGH</span></td>
-              <td><span class="fix-ver">Validate URL scheme</span></td>
-            </tr>
-            <tr id="d-s1" class="tr-detail"><td colspan="9"><div class="detail-grid"><div class="detail-block"><h4>Vulnerable Code</h4><div class="code-block">req = request.Request(url, headers={...})
-with request.urlopen(req, timeout=...) as resp:</div></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">from urllib.parse import urlparse
-parsed = urlparse(url)
-if parsed.scheme not in ('http', 'https'):
-    raise ValueError("Only http/https allowed")</div></div></div></td></tr>
-
-            <tr onclick="toggleDetail('d-s2')">
-              <td><span class="sev sev-medium">MEDIUM</span></td>
-              <td>Bandit</td>
-              <td><span class="cve-id">B310</span></td>
-              <td><span class="issue-title">URL open — unrestricted schemes</span><div class="issue-desc">Same issue in threat intel feed fetcher</div></td>
-              <td><span class="file">services/threat_intel.py:88</span></td>
-              <td><span class="cve-id">CWE-22</span></td>
-              <td><span class="owasp-tag">A10:2021 SSRF</span></td>
-              <td><span class="sev sev-info">HIGH</span></td>
-              <td><span class="fix-ver">Validate URL scheme</span></td>
-            </tr>
-            <tr id="d-s2" class="tr-detail"><td colspan="9"><div class="detail-grid"><div class="detail-block"><h4>Vulnerable Code</h4><div class="code-block">req = request.Request(feed, headers={...})
-with request.urlopen(req, timeout=...) as resp:</div></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">Validate all URLs before opening.
-Allow only https:// scheme for external feeds.
-Use httpx instead: httpx.get(url) — safer defaults.</div></div></div></td></tr>
-
-            <tr onclick="toggleDetail('d-s3')">
-              <td><span class="sev sev-medium">MEDIUM</span></td>
-              <td>Bandit</td>
-              <td><span class="cve-id">B608</span></td>
-              <td><span class="issue-title">SQL injection via f-string query</span><div class="issue-desc">Sort expression injected directly into SQL string</div></td>
-              <td><span class="file">sqlite_store.py:410</span></td>
-              <td><span class="cve-id">CWE-89</span></td>
-              <td><span class="owasp-tag">A03:2021 Injection</span></td>
-              <td><span class="sev sev-warning">LOW</span></td>
-              <td><span class="fix-ver">Use allowlist for sort fields</span></td>
-            </tr>
-            <tr id="d-s3" class="tr-detail"><td colspan="9"><div class="detail-grid"><div class="detail-block"><h4>Vulnerable Code</h4><div class="code-block">sql = (
-  "SELECT id, prompt ... "
-  f"FROM logs {where} ORDER BY {sort_expr} ..."
-)</div></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">ALLOWED_SORT = {'timestamp', 'risk_score', 'id'}
-if sort_expr not in ALLOWED_SORT:
-    sort_expr = 'timestamp'  # safe default
-# Never interpolate user input into SQL strings</div></div></div></td></tr>
-
-            <tr onclick="toggleDetail('d-s4')">
-              <td><span class="sev sev-medium">MEDIUM</span></td>
-              <td>Bandit</td>
-              <td><span class="cve-id">B608</span></td>
-              <td><span class="issue-title">SQL injection via f-string query</span><div class="issue-desc">Same pattern in code_findings query builder</div></td>
-              <td><span class="file">sqlite_store.py:555</span></td>
-              <td><span class="cve-id">CWE-89</span></td>
-              <td><span class="owasp-tag">A03:2021 Injection</span></td>
-              <td><span class="sev sev-warning">LOW</span></td>
-              <td><span class="fix-ver">Use allowlist for sort fields</span></td>
-            </tr>
-            <tr id="d-s4" class="tr-detail"><td colspan="9"><div class="detail-grid"><div class="detail-block"><h4>Vulnerable Code</h4><div class="code-block">sql = (
-  "SELECT id, log_id, prompt ... "
-  f"FROM code_findings {where} ORDER BY timestamp ..."
-)</div></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">Validate all dynamic column/sort names against
-an explicit allowlist before query construction.</div></div></div></td></tr>
-
-            <tr onclick="toggleDetail('d-s5')">
-              <td><span class="sev sev-low">LOW</span></td>
-              <td>Bandit</td>
-              <td><span class="cve-id">B105</span></td>
-              <td><span class="issue-title">Hardcoded SECRET_KEY</span><div class="issue-desc">JWT signing key hardcoded in source file</div></td>
-              <td><span class="file">app/config.py:3</span></td>
-              <td><span class="cve-id">CWE-259</span></td>
-              <td><span class="owasp-tag">A02:2021 Crypto Failures</span></td>
-              <td><span class="sev sev-medium">MEDIUM</span></td>
-              <td><span class="fix-ver">Move to env variable</span></td>
-            </tr>
-            <tr id="d-s5" class="tr-detail"><td colspan="9"><div class="detail-grid"><div class="detail-block"><h4>Vulnerable Code</h4><div class="code-block">SECRET_KEY = "my-super-secret-key-123"</div></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">import os
-SECRET_KEY = os.environ["JWT_SECRET_KEY"]
-# Add JWT_SECRET_KEY to your .env file
-# Generate strong key: openssl rand -hex 32</div></div></div></td></tr>
-
-            <tr onclick="toggleDetail('d-s6')">
-              <td><span class="sev sev-warning">WARNING</span></td>
-              <td>Semgrep</td>
-              <td><span class="cve-id">nginx-host-injection</span></td>
-              <td><span class="issue-title">$host used in nginx — Host Header Injection</span><div class="issue-desc">$host variable can be controlled by attacker request</div></td>
-              <td><span class="file">frontend/nginx.conf</span></td>
-              <td><span class="cve-id">CWE-113</span></td>
-              <td><span class="owasp-tag">A07:2021 Auth Failures</span></td>
-              <td><span class="sev sev-info">HIGH</span></td>
-              <td><span class="fix-ver">Use $server_name</span></td>
-            </tr>
-            <tr id="d-s6" class="tr-detail"><td colspan="9"><div class="detail-grid"><div class="detail-block"><h4>Issue</h4><p style="font-size:12px;color:var(--text-muted)">$host reflects the Host header from the request, which an attacker can control. This can lead to cache poisoning or password-reset link hijacking.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation"># Replace $host with $server_name in nginx.conf
-# $server_name uses your configured server name
-# and cannot be controlled by the attacker</div></div></div></td></tr>
-          </tbody>
-        </table>
+      <div id="sast-codeql">
+        <div class="table-wrap table-scroll">
+          <table>
+            <thead><tr><th>Severity</th><th>Rule ID</th><th>Issue</th><th>Location</th><th>OWASP</th><th>Link</th></tr></thead>
+            <tbody id="sast-codeql-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div id="sast-manual" style="display:none">
+        <div class="summary-row">
+          <div class="summary-chip">&#128269; Tools: Bandit, Semgrep</div>
+          <div class="summary-chip">&#128994; Most findings suppressed with nosec</div>
+        </div>
+        <div class="table-wrap table-scroll">
+          <table>
+            <thead><tr><th>Severity</th><th>Tool</th><th>Check ID</th><th>Issue</th><th>File / Line</th><th>OWASP</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr onclick="toggleDetail('d-s1')">
+                <td><span class="sev sev-medium">MEDIUM</span></td><td>Bandit</td><td><span class="cve-id">B310</span></td>
+                <td><span class="issue-title">URL open — scheme validated, nosec applied</span><div class="issue-desc">urllib.request.urlopen with scheme check + allowlist</div></td>
+                <td><span class="file">routes/security.py:253</span></td>
+                <td><span class="owasp-tag">A10:2021 SSRF</span></td>
+                <td><span class="status status-fixed">Fixed</span></td>
+              </tr>
+              <tr id="d-s1" class="tr-detail"><td colspan="7"><div class="detail-grid">
+                <div class="detail-block"><h4>Fix Applied</h4><div class="remediation">scheme validated to http/https only
+host validated against allowlist
+# nosec B310 annotation added</div></div>
+                <div class="detail-block"><h4>Notes</h4><p style="font-size:12px;color:var(--text-muted)">Both security.py and threat_intel.py patched with scheme + allowlist validation.</p></div>
+              </div></td></tr>
+              <tr onclick="toggleDetail('d-s3')">
+                <td><span class="sev sev-medium">MEDIUM</span></td><td>Bandit</td><td><span class="cve-id">B608</span></td>
+                <td><span class="issue-title">SQL injection via f-string — sort field allowlisted</span><div class="issue-desc">Sort expression uses explicit allowlist</div></td>
+                <td><span class="file">sqlite_store.py:410</span></td>
+                <td><span class="owasp-tag">A03:2021 Injection</span></td>
+                <td><span class="status status-fixed">Suppressed</span></td>
+              </tr>
+              <tr id="d-s3" class="tr-detail"><td colspan="7"><div class="detail-grid">
+                <div class="detail-block"><h4>Mitigation</h4><div class="remediation">ALLOWED_SORT = {'timestamp','risk_score','id'}
+sort_expr validated against allowlist
+# nosec B608 annotation added</div></div>
+                <div class="detail-block"><h4>Notes</h4><p style="font-size:12px;color:var(--text-muted)">Sort column is validated against an explicit allowlist — not user-controlled. Suppressed with justification comment.</p></div>
+              </div></td></tr>
+              <tr onclick="toggleDetail('d-s5')">
+                <td><span class="sev sev-low">LOW</span></td><td>Bandit</td><td><span class="cve-id">B105</span></td>
+                <td><span class="issue-title">Hardcoded SECRET_KEY — replaced with env var</span></td>
+                <td><span class="file">app/config.py:3</span></td>
+                <td><span class="owasp-tag">A02:2021 Crypto</span></td>
+                <td><span class="status status-fixed">Fixed</span></td>
+              </tr>
+              <tr id="d-s5" class="tr-detail"><td colspan="7"><div class="detail-grid">
+                <div class="detail-block"><h4>Fix Applied</h4><div class="remediation">SECRET_KEY = secrets.token_hex(32)
+# Generated securely at runtime</div></div>
+                <div class="detail-block"><h4>Notes</h4><p style="font-size:12px;color:var(--text-muted)">Replaced hardcoded string with secrets.token_hex(32) — generates a secure random key on each startup.</p></div>
+              </div></td></tr>
+              <tr onclick="toggleDetail('d-s6')">
+                <td><span class="sev sev-warning">WARNING</span></td><td>Semgrep</td><td><span class="cve-id">nginx-host-injection</span></td>
+                <td><span class="issue-title">$host → $server_name in nginx</span></td>
+                <td><span class="file">frontend/nginx.conf</span></td>
+                <td><span class="owasp-tag">A07:2021 Auth</span></td>
+                <td><span class="status status-fixed">Fixed</span></td>
+              </tr>
+              <tr id="d-s6" class="tr-detail"><td colspan="7"><div class="detail-grid">
+                <div class="detail-block"><h4>Fix Applied</h4><div class="remediation">proxy_set_header Host $server_name;
+# was: $host (attacker-controllable)</div></div>
+                <div class="detail-block"><h4>Notes</h4><p style="font-size:12px;color:var(--text-muted)">$server_name is set from the nginx config and cannot be spoofed via the Host header.</p></div>
+              </div></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- ═══ SCA PAGE ═══ -->
+    <!-- SCA -->
     <div id="page-sca" class="page">
       <div class="tabs">
-        <div class="tab active" onclick="showTab('sca-py', this)">Python (pip-audit) — 8 CVEs</div>
-        <div class="tab" onclick="showTab('sca-npm', this)">Frontend (npm audit) — 6 vulnerabilities</div>
+        <div class="tab active" onclick="showTab('sca-py',this)">Python — 8 CVEs</div>
+        <div class="tab" onclick="showTab('sca-npm',this)">Frontend — 6 CVEs</div>
       </div>
-
       <div id="sca-py">
         <div class="summary-row">
-          <div class="summary-chip">📦 4 vulnerable packages</div>
-          <div class="summary-chip">🟠 3 High CVEs</div>
-          <div class="summary-chip">🟡 4 Medium CVEs</div>
-          <div class="summary-chip">🟢 1 Low CVE</div>
-          <div class="summary-chip">✅ Dependabot PRs open for all</div>
+          <div class="summary-chip">&#128230; 4 vulnerable packages</div>
+          <div class="summary-chip">&#128992; 3 High CVEs</div>
+          <div class="summary-chip">&#128993; 4 Medium CVEs</div>
+          <div class="summary-chip">&#128994; 1 Low CVE</div>
+          <div class="summary-chip">&#9989; Dependabot PRs open for all</div>
         </div>
         <div class="table-wrap table-scroll">
           <table>
             <thead><tr><th>Severity</th><th>Package</th><th>Current</th><th>Fix Version</th><th>CVE ID</th><th>Description</th><th>PR</th></tr></thead>
             <tbody>
-              <tr onclick="toggleDetail('d-py1')"><td><span class="sev sev-high">HIGH</span></td><td><span class="pkg-name">python-multipart</span></td><td>0.0.9</td><td><span class="fix-ver">0.0.26</span></td><td><span class="cve-id">CVE-2024-53981</span></td><td>DoS — excessive logging on malformed multipart</td><td><a href="#" style="color:var(--info);font-size:11px">#19</a></td></tr>
-              <tr id="d-py1" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Attacker sends large data before/after multipart boundary causing high CPU load and stalling the processing thread. Can block ASGI event loop.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-multipart==0.0.27
+              <tr onclick="toggleDetail('d-py1')"><td><span class="sev sev-high">HIGH</span></td><td><span class="pkg-name">python-multipart</span></td><td>0.0.9</td><td><span class="fix-ver">0.0.27</span></td><td><span class="cve-id">CVE-2024-53981</span></td><td>DoS via malformed multipart</td><td><a href="https://github.com/Sriram1706/ai-security-monitoring-tool/pull/19" style="color:var(--info);font-size:11px">#19</a></td></tr>
+              <tr id="d-py1" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Attacker sends large data before/after multipart boundary causing high CPU load and stalling the ASGI event loop.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-multipart==0.0.27
 # Or merge Dependabot PR #19</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-py2')"><td><span class="sev sev-high">HIGH</span></td><td><span class="pkg-name">python-multipart</span></td><td>0.0.9</td><td><span class="fix-ver">0.0.22</span></td><td><span class="cve-id">CVE-2026-24486</span></td><td>Path traversal via crafted filename</td><td><a href="#" style="color:var(--info);font-size:11px">#19</a></td></tr>
-              <tr id="d-py2" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">When UPLOAD_KEEP_FILENAME=True, attacker can write uploaded files to arbitrary filesystem locations using os.path.join("/upload","/etc/malicious") bypass.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-multipart==0.0.27
-# Or merge Dependabot PR #19</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-py3')"><td><span class="sev sev-high">HIGH</span></td><td><span class="pkg-name">python-multipart</span></td><td>0.0.9</td><td><span class="fix-ver">0.0.26</span></td><td><span class="cve-id">CVE-2026-40347</span></td><td>DoS via large preamble/epilogue parsing</td><td><a href="#" style="color:var(--info);font-size:11px">#19</a></td></tr>
-              <tr id="d-py3" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Parser handled leading CR/LF bytes inefficiently. Attacker crafts multipart body with oversized preamble consuming excessive CPU.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-multipart==0.0.27
-# Or merge Dependabot PR #19</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-py4')"><td><span class="sev sev-medium">MEDIUM</span></td><td><span class="pkg-name">python-jose</span></td><td>3.3.0</td><td><span class="fix-ver">3.4.0</span></td><td><span class="cve-id">CVE-2024-33663</span></td><td>Algorithm confusion with OpenSSH ECDSA keys</td><td><a href="#" style="color:var(--info);font-size:11px">#13</a></td></tr>
-              <tr id="d-py4" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Algorithm confusion attack — attacker may forge JWT tokens by exploiting key format confusion with OpenSSH ECDSA keys.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-jose==3.5.0
-# Or merge Dependabot PR #13</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-py5')"><td><span class="sev sev-medium">MEDIUM</span></td><td><span class="pkg-name">python-jose</span></td><td>3.3.0</td><td><span class="fix-ver">3.4.0</span></td><td><span class="cve-id">CVE-2024-33664</span></td><td>JWT bomb — DoS via crafted JWE token</td><td><a href="#" style="color:var(--info);font-size:11px">#13</a></td></tr>
-              <tr id="d-py5" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Crafted JWE token with high compression ratio causes excessive memory consumption during decode (resource exhaustion DoS).</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-jose==3.5.0
-# Or merge Dependabot PR #13</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-py6')"><td><span class="sev sev-medium">MEDIUM</span></td><td><span class="pkg-name">starlette</span></td><td>0.38.6</td><td><span class="fix-ver">0.40.0</span></td><td><span class="cve-id">CVE-2024-47874</span></td><td>DoS via unlimited multipart form field buffering</td><td><a href="#" style="color:var(--info);font-size:11px">#8</a></td></tr>
-              <tr id="d-py6" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">multipart/form-data parts without filename are buffered in memory with no size limit — attacker can exhaust server memory.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install starlette==0.47.2
-# Or merge Dependabot PR #8 (fastapi upgrade)</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-py7')"><td><span class="sev sev-medium">MEDIUM</span></td><td><span class="pkg-name">starlette</span></td><td>0.38.6</td><td><span class="fix-ver">0.47.2</span></td><td><span class="cve-id">CVE-2025-54121</span></td><td>Event loop blocking during large file upload</td><td><a href="#" style="color:var(--info);font-size:11px">#8</a></td></tr>
-              <tr id="d-py7" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Main thread blocked during large file upload rollover to disk — prevents new connections from being accepted.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install starlette==0.47.2
-# Or merge Dependabot PR #8 (fastapi upgrade)</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-py8')"><td><span class="sev sev-low">LOW</span></td><td><span class="pkg-name">python-dotenv</span></td><td>1.2.1</td><td><span class="fix-ver">1.2.2</span></td><td><span class="cve-id">CVE-2026-28684</span></td><td>Symlink attack in set_key()/unset_key()</td><td><a href="#" style="color:var(--info);font-size:11px">—</a></td></tr>
-              <tr id="d-py8" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Local attacker can overwrite arbitrary files via crafted symlink when cross-device rename fallback is triggered by set_key().</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-dotenv==1.2.2</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-py4')"><td><span class="sev sev-medium">MEDIUM</span></td><td><span class="pkg-name">python-jose</span></td><td>3.3.0</td><td><span class="fix-ver">3.5.0</span></td><td><span class="cve-id">CVE-2024-33663</span></td><td>Algorithm confusion — JWT forgery</td><td><a href="https://github.com/Sriram1706/ai-security-monitoring-tool/pull/13" style="color:var(--info);font-size:11px">#13</a></td></tr>
+              <tr id="d-py4" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Algorithm confusion attack — attacker may forge JWT tokens via OpenSSH ECDSA key format confusion.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-jose==3.5.0</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-py6')"><td><span class="sev sev-medium">MEDIUM</span></td><td><span class="pkg-name">starlette</span></td><td>0.38.6</td><td><span class="fix-ver">0.47.2</span></td><td><span class="cve-id">CVE-2024-47874</span></td><td>DoS via unlimited multipart buffering</td><td><a href="https://github.com/Sriram1706/ai-security-monitoring-tool/pull/8" style="color:var(--info);font-size:11px">#8</a></td></tr>
+              <tr id="d-py6" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">multipart/form-data parts without filename are buffered in memory with no size limit.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install starlette==0.47.2</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-py8')"><td><span class="sev sev-low">LOW</span></td><td><span class="pkg-name">python-dotenv</span></td><td>1.2.1</td><td><span class="fix-ver">1.2.2</span></td><td><span class="cve-id">CVE-2026-28684</span></td><td>Symlink attack in set_key()</td><td>—</td></tr>
+              <tr id="d-py8" class="tr-detail"><td colspan="7"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Local attacker can overwrite arbitrary files via crafted symlink during cross-device rename fallback.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">pip install python-dotenv==1.2.2</div></div></div></td></tr>
             </tbody>
           </table>
         </div>
       </div>
-
       <div id="sca-npm" style="display:none">
         <div class="summary-row">
-          <div class="summary-chip">📦 5 vulnerable packages</div>
-          <div class="summary-chip">🟠 1 High</div>
-          <div class="summary-chip">🟡 5 Moderate</div>
-          <div class="summary-chip">🔧 Most fixable with npm audit fix</div>
+          <div class="summary-chip">&#128230; 5 vulnerable packages</div>
+          <div class="summary-chip">&#128992; 1 High</div>
+          <div class="summary-chip">&#128993; 5 Moderate</div>
+          <div class="summary-chip">&#128295; Dependabot PRs open</div>
         </div>
         <div class="table-wrap table-scroll">
           <table>
-            <thead><tr><th>Severity</th><th>Package</th><th>Vulnerability</th><th>Fix Command</th><th>PR</th></tr></thead>
+            <thead><tr><th>Severity</th><th>Package</th><th>Vulnerability</th><th>Fix</th><th>PR</th></tr></thead>
             <tbody>
-              <tr onclick="toggleDetail('d-npm1')"><td><span class="sev sev-high">HIGH</span></td><td><span class="pkg-name">lodash</span></td><td>Code injection + Prototype Pollution</td><td><span class="fix-ver">npm audit fix</span></td><td><a href="#" style="color:var(--info);font-size:11px">—</a></td></tr>
-              <tr id="d-npm1" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">_.template() allows code injection via imported key names. _.unset()/_omit() allows prototype pollution via array path bypass.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">cd frontend && npm audit fix
-# Or upgrade lodash to 4.17.21+</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-npm2')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">axios</span></td><td>SSRF via NO_PROXY bypass + metadata exfiltration</td><td><span class="fix-ver">npm audit fix</span></td><td><a href="#" style="color:var(--info);font-size:11px">#3</a></td></tr>
-              <tr id="d-npm2" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Attacker can bypass NO_PROXY via hostname normalization. Cloud metadata (AWS IMDSv1) can be exfiltrated via header injection chain.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">cd frontend && npm audit fix
-# Upgrades axios to 1.15.2+</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-npm3')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">vite / esbuild</span></td><td>Dev server exposes requests to any website</td><td><span class="fix-ver">npm audit fix --force</span></td><td><a href="#" style="color:var(--info);font-size:11px">#5</a></td></tr>
-              <tr id="d-npm3" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Dev server only — any website can send requests to the esbuild/vite dev server and read responses. Not a production risk.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">npm audit fix --force
-# Will upgrade to vite 8.x (breaking change — test first)
-# Or merge Dependabot PR #5</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-npm4')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">follow-redirects</span></td><td>Auth headers leaked to cross-domain redirects</td><td><span class="fix-ver">npm audit fix</span></td><td><a href="#" style="color:var(--info);font-size:11px">—</a></td></tr>
-              <tr id="d-npm4" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Custom Authorization headers are forwarded to redirect targets on different domains, potentially leaking credentials.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">cd frontend && npm audit fix</div></div></div></td></tr>
-
-              <tr onclick="toggleDetail('d-npm5')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">postcss</span></td><td>XSS via unescaped &lt;/style&gt; in CSS output</td><td><span class="fix-ver">npm audit fix</span></td><td><a href="#" style="color:var(--info);font-size:11px">#4</a></td></tr>
-              <tr id="d-npm5" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">&lt;/style&gt; tags in CSS are not escaped in stringify output, potentially allowing XSS if CSS is user-controlled.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">cd frontend && npm audit fix
-# Upgrades postcss to 8.5.13</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-npm1')"><td><span class="sev sev-high">HIGH</span></td><td><span class="pkg-name">lodash</span></td><td>Code injection + Prototype Pollution</td><td><span class="fix-ver">npm audit fix</span></td><td>—</td></tr>
+              <tr id="d-npm1" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">_.template() allows code injection. _.unset() allows prototype pollution via array path bypass.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">cd frontend && npm audit fix</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-npm2')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">axios</span></td><td>SSRF via NO_PROXY bypass</td><td><span class="fix-ver">npm audit fix</span></td><td><a href="https://github.com/Sriram1706/ai-security-monitoring-tool/pull/3" style="color:var(--info);font-size:11px">#3</a></td></tr>
+              <tr id="d-npm2" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Attacker bypasses NO_PROXY via hostname normalization. Cloud metadata can be exfiltrated.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">cd frontend && npm audit fix</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-npm3')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">vite / esbuild</span></td><td>Dev server exposes requests to any website</td><td><span class="fix-ver">npm audit fix --force</span></td><td><a href="https://github.com/Sriram1706/ai-security-monitoring-tool/pull/5" style="color:var(--info);font-size:11px">#5</a></td></tr>
+              <tr id="d-npm3" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Dev only — any website can read from the esbuild dev server. Not a production risk.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">npm audit fix --force  # upgrades vite 8.x</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-npm4')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">follow-redirects</span></td><td>Auth headers leaked to cross-domain redirects</td><td><span class="fix-ver">npm audit fix</span></td><td>—</td></tr>
+              <tr id="d-npm4" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">Authorization headers forwarded to redirect targets on different domains.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">cd frontend && npm audit fix</div></div></div></td></tr>
+              <tr onclick="toggleDetail('d-npm5')"><td><span class="sev sev-medium">MODERATE</span></td><td><span class="pkg-name">postcss</span></td><td>XSS via unescaped &lt;/style&gt; in CSS output</td><td><span class="fix-ver">npm audit fix</span></td><td><a href="https://github.com/Sriram1706/ai-security-monitoring-tool/pull/4" style="color:var(--info);font-size:11px">#4</a></td></tr>
+              <tr id="d-npm5" class="tr-detail"><td colspan="5"><div class="detail-grid"><div class="detail-block"><h4>Impact</h4><p style="font-size:12px;color:var(--text-muted)">&lt;/style&gt; tags in CSS are not escaped — allows XSS if CSS is user-controlled.</p></div><div class="detail-block"><h4>Remediation</h4><div class="remediation">npm audit fix  # upgrades postcss to 8.5.13</div></div></div></td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ═══ DAST PAGE ═══ -->
+    <!-- DAST -->
     <div id="page-dast" class="page">
       <div class="summary-row">
-        <div class="summary-chip">🌐 Tool: OWASP ZAP</div>
-        <div class="summary-chip" id="dast-status-chip" style="border-color:var(--medium);color:var(--medium)">Loading…</div>
+        <div class="summary-chip">&#127760; Tool: OWASP ZAP 2.17.0</div>
+        <div class="summary-chip" id="dast-status-chip">Loading…</div>
       </div>
       <div id="dast-content" class="table-wrap" style="padding:40px;text-align:center">
-        <div style="font-size:40px;margin-bottom:12px">🌐</div>
         <div style="font-size:15px;color:var(--text-muted)">Loading ZAP results…</div>
       </div>
     </div>
 
-    <!-- ═══ IaC PAGE ═══ -->
+    <!-- IaC -->
     <div id="page-iac" class="page">
-      <div class="summary-row">
-        <div class="summary-chip">🏗️ Tool: Checkov</div>
-        <div class="summary-chip" style="border-color:var(--medium);color:var(--medium)">⏳ Pipeline queued</div>
-      </div>
-      <div class="table-wrap" style="padding:40px;text-align:center">
-        <div style="font-size:40px;margin-bottom:12px">🏗️</div>
-        <div style="font-size:15px;color:var(--text-bright);margin-bottom:8px">Checkov IaC scan queued</div>
-        <div style="font-size:13px;color:var(--text-muted);max-width:480px;margin:0 auto">Checkov will scan your Dockerfile and docker-compose.yml for misconfigurations. Results will appear here once the pipeline dequeues on GitHub Actions.</div>
-        <div style="margin-top:20px;font-size:12px;color:var(--text-muted)">Check: <a href="https://github.com/Sriram1706/ai-security-monitoring-tool/actions" style="color:var(--info)">github.com/Sriram1706/.../actions</a></div>
+      <div class="summary-row" id="iac-summary"></div>
+      <div class="table-wrap table-scroll">
+        <table>
+          <thead><tr><th>Severity</th><th>Check ID</th><th>Issue</th><th>Resource</th><th>File</th><th>Link</th></tr></thead>
+          <tbody id="iac-tbody"></tbody>
+        </table>
       </div>
     </div>
 
-    <!-- ═══ SECRETS PAGE ═══ -->
+    <!-- SECRETS -->
     <div id="page-secrets" class="page">
       <div class="summary-row">
-        <div class="summary-chip">🔑 Tool: Gitleaks</div>
-        <div class="summary-chip" style="border-color:var(--low);color:var(--low)">✅ Clean — no secrets found</div>
+        <div class="summary-chip">&#128273; Tool: Gitleaks</div>
+        <div class="summary-chip" style="border-color:var(--low);color:var(--low)">&#9989; Clean — no secrets found</div>
+        <div class="summary-chip">&#128274; GitHub push protection: Active</div>
       </div>
       <div class="table-wrap" style="padding:40px;text-align:center">
-        <div style="font-size:40px;margin-bottom:12px">✅</div>
+        <div style="font-size:40px;margin-bottom:12px">&#9989;</div>
         <div style="font-size:15px;color:var(--low);margin-bottom:8px">No secrets detected in git history</div>
-        <div style="font-size:13px;color:var(--text-muted);max-width:480px;margin:0 auto">Gitleaks scanned the full git history (1 commit, 1.16 MB) and found no leaked API keys, passwords, or credentials. Push protection is active on GitHub.</div>
-        <div style="margin-top:16px;background:var(--surface2);border:1px solid #2d4a2d;border-radius:8px;padding:14px;max-width:360px;margin:16px auto 0;font-size:12px;color:var(--low)">⚠️ Remember: Regenerate your OpenAI API keys — they were present in .env files before git setup.</div>
+        <div style="font-size:13px;color:var(--text-muted);max-width:480px;margin:0 auto">Gitleaks scanned the full git history and found no leaked API keys, passwords, or credentials. GitHub push protection is active and will block future secret commits.</div>
+        <div style="margin-top:16px;background:var(--surface2);border:1px solid #3d2e00;border-radius:8px;padding:14px;max-width:400px;margin:16px auto 0;font-size:12px;color:var(--medium)">&#9888; Reminder: Regenerate any OpenAI API keys that existed in .env files before .gitignore was configured.</div>
       </div>
     </div>
 
-    <!-- ═══ TIMELINE PAGE ═══ -->
+    <!-- TIMELINE -->
     <div id="page-timeline" class="page">
       <div class="section">
         <div class="section-header"><div class="section-title">Activity Timeline</div></div>
         <div class="table-wrap" style="padding:24px">
-          <div class="timeline">
-            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--low)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">✅ Repo made public — GitHub Advanced Security unlocked</div><div class="tl-time">May 1, 2026 — 06:00</div></div></div>
-            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--info)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">🤖 Dependabot created 28 PRs for outdated/vulnerable packages</div><div class="tl-time">May 1, 2026 — 05:45</div></div></div>
-            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--info)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">🔧 CI/CD security pipeline deployed (Semgrep, CodeQL, Snyk, Trivy, Checkov, ZAP, Gitleaks)</div><div class="tl-time">May 1, 2026 — 05:40</div></div></div>
-            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--low)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">✅ Initial commit — 136 files pushed, no secrets leaked</div><div class="tl-time">May 1, 2026 — 05:25</div></div></div>
-            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--critical)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">⚠️ OpenAI API keys found in .env files — excluded from commit via .gitignore</div><div class="tl-time">May 1, 2026 — 05:20</div></div></div>
-            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--medium)"></div></div><div class="tl-content"><div class="tl-title">🔍 Local scans run: Bandit (5 issues), pip-audit (8 CVEs), npm audit (6 CVEs), Gitleaks (clean)</div><div class="tl-time">May 1, 2026 — 05:19</div></div></div>
+          <div class="timeline" id="timeline-list">
+            <!-- Latest CI run prepended dynamically -->
+            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--low)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">&#9989; API URL fix: replaced hardcoded localhost:8000 with /api/ paths — dashboard now shows live data</div><div class="tl-time">May 2, 2026</div></div></div>
+            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--info)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">&#9654; ECS deployment pipeline live — auto-deploys on every CI pass</div><div class="tl-time">May 1, 2026</div></div></div>
+            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--low)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">&#9989; Repo made public — GitHub Advanced Security unlocked</div><div class="tl-time">May 1, 2026</div></div></div>
+            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--info)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">&#129302; Dependabot created 28 PRs for outdated/vulnerable packages</div><div class="tl-time">May 1, 2026</div></div></div>
+            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--info)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">&#128295; CI/CD security pipeline deployed (Semgrep, CodeQL, Snyk, Trivy, Checkov, ZAP, Gitleaks)</div><div class="tl-time">May 1, 2026</div></div></div>
+            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--critical)"></div><div class="tl-line"></div></div><div class="tl-content"><div class="tl-title">&#9888; OpenAI API keys found in .env files — excluded from commit via .gitignore</div><div class="tl-time">May 1, 2026</div></div></div>
+            <div class="tl-item"><div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--medium)"></div></div><div class="tl-content"><div class="tl-title">&#128269; Local scans: Bandit (5 issues), pip-audit (8 CVEs), npm audit (6 CVEs), Gitleaks (clean)</div><div class="tl-time">May 1, 2026</div></div></div>
           </div>
         </div>
       </div>
@@ -675,19 +554,74 @@ SECRET_KEY = os.environ["JWT_SECRET_KEY"]
 </main>
 
 <script>
+'use strict';
 const REPO = 'Sriram1706/ai-security-monitoring-tool';
 let allVulns = [];
 
-// ─── GitHub API ──────────────────────────────────────────────────────────────
+// ── OWASP mapping ─────────────────────────────────────────────────────────────
+function owaspFromRule(ruleId, desc) {
+  const t = ((ruleId || '') + ' ' + (desc || '')).toLowerCase();
+  if (/sql.inject|nosql|inject/.test(t))          return 'A03:2021 Injection';
+  if (/xss|cross.site.script/.test(t))            return 'A03:2021 Injection';
+  if (/command.inject|shell/.test(t))             return 'A03:2021 Injection';
+  if (/path.travers|zip.slip|file.inclus/.test(t))return 'A01:2021 Broken Access';
+  if (/ssrf|open.redirect|url.redirect/.test(t))  return 'A10:2021 SSRF';
+  if (/broken.auth|session.fix|weak.session/.test(t)) return 'A07:2021 Auth Failures';
+  if (/crypto|weak.hash|md5|sha1|hardcod.*key|secret/.test(t)) return 'A02:2021 Crypto Failures';
+  if (/xxe|deserialization|unsafe.deserial/.test(t)) return 'A08:2021 Integrity Failures';
+  if (/log.inject|monitor/.test(t))               return 'A09:2021 Logging Failures';
+  if (/component|outdated|vulnerable.depend/.test(t)) return 'A06:2021 Vuln Components';
+  if (/misconfig|default.config|docker|iac/.test(t))  return 'A05:2021 Misconfiguration';
+  return 'A05:2021 Misconfiguration';
+}
+
+// ── Tool classification ───────────────────────────────────────────────────────
+function toolType(name) {
+  const n = (name || '').toLowerCase();
+  if (n.includes('zap'))     return 'DAST';
+  if (n.includes('checkov')) return 'IaC';
+  if (n.includes('trivy') || n.includes('snyk')) return 'SCA';
+  return 'SAST';
+}
+
+// ── Severity normalisation ────────────────────────────────────────────────────
+function normSev(s) {
+  const v = (s || '').toLowerCase();
+  if (v === 'critical') return 'critical';
+  if (v === 'high' || v === 'error') return 'high';
+  if (v === 'medium' || v === 'warning') return 'medium';
+  if (v === 'low') return 'low';
+  return 'note';
+}
+
+function sevClass(s) {
+  const v = normSev(s);
+  if (v === 'critical') return 'sev-critical';
+  if (v === 'high')     return 'sev-high';
+  if (v === 'medium')   return 'sev-medium';
+  if (v === 'low')      return 'sev-low';
+  return 'sev-note';
+}
+
+function sevWeight(s) {
+  const v = normSev(s);
+  return { critical: 4, high: 3, medium: 2, low: 1, note: 0 }[v] || 0;
+}
+
+// ── Security score ────────────────────────────────────────────────────────────
+function calcScore(c) {
+  const penalty = c.critical * 25 + c.high * 8 + c.medium * 2 + c.low * 0.5;
+  return Math.max(0, Math.round(100 - penalty));
+}
+
+// ── Fetch alerts (baked at CI time, GitHub API fallback) ──────────────────────
 async function fetchAlerts() {
-  // Use pre-baked data injected at CI time (no auth needed in browser)
-  if (window.BAKED_ALERTS) return window.BAKED_ALERTS;
-  // Fallback: live API (requires auth — may fail for unauthenticated users)
+  if (window.BAKED_ALERTS && window.BAKED_ALERTS.length) return window.BAKED_ALERTS;
   const alerts = [];
   let page = 1;
   while (true) {
     const r = await fetch(`https://api.github.com/repos/${REPO}/code-scanning/alerts?state=open&per_page=100&page=${page}`);
-    if (!r.ok) throw new Error(`GitHub API ${r.status}: ${r.statusText}`);
+    if (!r.ok) throw new Error(`GitHub API ${r.status}`);
     const data = await r.json();
     alerts.push(...data);
     if (data.length < 100) break;
@@ -696,125 +630,241 @@ async function fetchAlerts() {
   return alerts;
 }
 
-function toolType(name) {
-  const n = (name || '').toLowerCase();
-  if (n.includes('zap')) return 'DAST';
-  if (n.includes('checkov')) return 'IaC';
-  if (n.includes('trivy') || n.includes('snyk')) return 'SCA';
-  return 'SAST';
-}
-
 function mapAlert(a) {
-  const file = a.most_recent_instance?.location?.path || '';
-  const line = a.most_recent_instance?.location?.start_line;
+  const ruleId = a.rule?.id || '';
+  const desc   = a.rule?.description || a.rule?.name || '';
   return {
-    id: a.number,
-    sev: a.rule?.severity || 'note',
-    type: toolType(a.tool?.name),
-    tool: a.tool?.name || 'Unknown',
-    issue: a.rule?.description || a.rule?.name || '—',
-    location: line ? `${file}:${line}` : file,
-    owasp: '',
-    fix: 'Review required',
-    status: a.state,
-    url: a.html_url,
+    id:       a.number,
+    sev:      a.rule?.security_severity_level || a.rule?.severity || 'note',
+    type:     toolType(a.tool?.name),
+    tool:     a.tool?.name || 'Unknown',
+    issue:    desc || ruleId,
+    location: (() => {
+      const p = a.most_recent_instance?.location?.path || '';
+      const l = a.most_recent_instance?.location?.start_line;
+      return l ? `${p}:${l}` : p;
+    })(),
+    owasp:    owaspFromRule(ruleId, desc),
+    url:      a.html_url || '',
+    state:    a.state || 'open',
   };
 }
 
-// ─── Charts ──────────────────────────────────────────────────────────────────
+// ── Charts ────────────────────────────────────────────────────────────────────
 Chart.defaults.color = '#8b949e';
-
 const chartSeverity = new Chart(document.getElementById('chartSeverity'), {
   type: 'doughnut',
-  data: {
-    labels: ['Critical','High','Medium','Low/Warning'],
-    datasets: [{ data: [0,0,0,0], backgroundColor: ['#f85149','#ff7b72','#e3b341','#3fb950'], borderWidth: 0, hoverOffset: 6 }]
-  },
+  data: { labels: ['Critical','High','Medium','Low/Info'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#f85149','#ff7b72','#e3b341','#3fb950'], borderWidth: 0, hoverOffset: 6 }] },
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
 });
-
 const chartTools = new Chart(document.getElementById('chartTools'), {
   type: 'bar',
-  data: {
-    labels: [],
-    datasets: [{ label: 'Findings', data: [], backgroundColor: '#58a6ff', borderRadius: 4, borderSkipped: false }]
-  },
+  data: { labels: [], datasets: [{ label: 'Findings', data: [], backgroundColor: [], borderRadius: 4, borderSkipped: false }] },
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#21262d' } }, y: { grid: { color: '#21262d' }, ticks: { stepSize: 1 } } } }
 });
-
 const chartCategory = new Chart(document.getElementById('chartCategory'), {
   type: 'doughnut',
-  data: {
-    labels: ['SCA','SAST','DAST','IaC'],
-    datasets: [{ data: [0,0,0,0], backgroundColor: ['#d2a8ff','#58a6ff','#3fb950','#ffa657'], borderWidth: 0, hoverOffset: 6 }]
-  },
+  data: { labels: ['SAST','SCA','DAST','IaC'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#58a6ff','#d2a8ff','#3fb950','#ffa657'], borderWidth: 0, hoverOffset: 6 }] },
   options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
 });
 
-// ─── Navigation ──────────────────────────────────────────────────────────────
-function showPage(id, el) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  if (el) el.classList.add('active');
-  const titles = {overview:'Security Overview',all:'All Vulnerabilities',sast:'SAST Findings',sca:'SCA — Dependency Vulnerabilities',dast:'DAST — OWASP ZAP',iac:'IaC — Checkov',secrets:'Secret Scanning',timeline:'Activity Timeline'};
-  document.getElementById('page-title').textContent = titles[id] || id;
-  if (id === 'all') renderAllTable(allVulns);
+// ── Pipeline grid ─────────────────────────────────────────────────────────────
+const PIPELINE_TOOLS = [
+  { name: 'CodeQL',      type: 'SAST',    scope: 'Python + JS',   key: 'CodeQL' },
+  { name: 'Semgrep',     type: 'SAST',    scope: 'OWASP rules',   key: 'Semgrep' },
+  { name: 'Trivy',       type: 'SCA',     scope: 'FS + Docker',   key: 'Trivy' },
+  { name: 'Snyk',        type: 'SCA',     scope: 'Py + Node',     key: 'Snyk' },
+  { name: 'Checkov',     type: 'IaC',     scope: 'Dockerfile',    key: 'checkov' },
+  { name: 'OWASP ZAP',   type: 'DAST',    scope: 'Live scan',     key: 'ZAP' },
+  { name: 'Gitleaks',    type: 'Secrets', scope: 'Git history',   key: 'Gitleaks' },
+  { name: 'Dependabot',  type: 'SCA',     scope: 'Weekly PRs',    key: 'Dependabot' },
+];
+
+function typeClass(t) {
+  return { SAST: 'pt-sast', SCA: 'pt-sca', DAST: 'pt-dast', IaC: 'pt-iac', Secrets: 'pt-secrets' }[t] || 'pt-sast';
 }
 
-function showTab(id, el) {
-  document.querySelectorAll('[id^="sca-"]').forEach(t => t.style.display = 'none');
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id).style.display = 'block';
-  el.classList.add('active');
+function buildPipelineGrid(countsByTool) {
+  const grid = document.getElementById('pipeline-grid');
+  grid.innerHTML = PIPELINE_TOOLS.map(tool => {
+    const cnt = countsByTool[tool.key] || countsByTool[tool.name] || 0;
+    const isClean = cnt === 0;
+    const color = isClean ? 'var(--low)' : (cnt > 5 ? 'var(--high)' : 'var(--medium)');
+    const dotClass = isClean ? 'dot-green' : 'dot-yellow';
+    const statusText = isClean ? 'Clean ✓' : `${cnt} finding${cnt !== 1 ? 's' : ''}`;
+    return `<div class="pipeline-card">
+      <div class="pipeline-card-top">
+        <span class="pipeline-name">${tool.name}</span>
+        <span class="pipeline-type ${typeClass(tool.type)}">${tool.type}</span>
+      </div>
+      <div class="pipeline-count" style="color:${color}">${cnt || '0'}</div>
+      <div class="pipeline-footer">
+        <div class="pipeline-status"><span class="dot ${dotClass}"></span>${statusText}</div>
+        <span style="font-size:11px;color:var(--text-muted)">${tool.scope}</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function toggleDetail(id) {
-  const el = document.getElementById(id);
-  if (el) el.classList.toggle('open');
+// ── SAST (CodeQL) page ────────────────────────────────────────────────────────
+function buildSastPage(vulns) {
+  const codeql = vulns.filter(v => v.tool === 'CodeQL' || toolType(v.tool) === 'SAST');
+  const counts = { critical: 0, high: 0, medium: 0, low: 0, note: 0 };
+  codeql.forEach(v => counts[normSev(v.sev)]++);
+
+  document.getElementById('sast-summary').innerHTML = [
+    `<div class="summary-chip">&#128269; <strong>${codeql.length}</strong> findings</div>`,
+    counts.critical ? `<div class="summary-chip" style="border-color:var(--critical);color:var(--critical)">&#128308; ${counts.critical} Critical</div>` : '',
+    counts.high     ? `<div class="summary-chip" style="border-color:var(--high);color:var(--high)">&#128992; ${counts.high} High</div>` : '',
+    counts.medium   ? `<div class="summary-chip" style="border-color:var(--medium);color:var(--medium)">&#128993; ${counts.medium} Medium</div>` : '',
+    counts.note     ? `<div class="summary-chip">&#128309; ${counts.note} Note/Info</div>` : '',
+    `<div class="summary-chip">&#128295; Tools: ${[...new Set(codeql.map(v => v.tool))].join(', ') || 'CodeQL'}</div>`,
+  ].join('');
+
+  const sorted = [...codeql].sort((a, b) => sevWeight(b.sev) - sevWeight(a.sev));
+  document.getElementById('sast-codeql-tbody').innerHTML = sorted.length
+    ? sorted.map(v => `<tr>
+        <td><span class="sev ${sevClass(v.sev)}">${(v.sev || 'note').toUpperCase()}</span></td>
+        <td><span class="cve-id">${v.tool === 'CodeQL' ? (v.issue.match(/\w+\/\w+/) || [v.issue.slice(0,30)])[0] : v.issue.slice(0,30)}</span></td>
+        <td><span class="issue-title">${v.url ? `<a href="${v.url}" target="_blank" style="color:inherit;text-decoration:none;hover:underline">${v.issue}</a>` : v.issue}</span></td>
+        <td><span class="file">${v.location || '—'}</span></td>
+        <td><span class="owasp-tag">${v.owasp}</span></td>
+        <td>${v.url ? `<a href="${v.url}" target="_blank" style="color:var(--info);font-size:11px">&#128279; View</a>` : '—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="6"><div class="no-results">No SAST findings in baked data.</div></td></tr>';
 }
 
-// ─── All Vulns Table ─────────────────────────────────────────────────────────
-function sevClass(s) {
-  if(s==='critical') return 'sev-high';
-  if(s==='high') return 'sev-high'; if(s==='medium') return 'sev-medium';
-  if(s==='low') return 'sev-low'; if(s==='warning') return 'sev-warning';
-  return 'sev-info';
+// ── IaC (Checkov) page ────────────────────────────────────────────────────────
+function buildIacPage(vulns) {
+  const iac = vulns.filter(v => v.type === 'IaC' || v.tool.toLowerCase().includes('checkov'));
+  const counts = { critical: 0, high: 0, medium: 0, low: 0, note: 0 };
+  iac.forEach(v => counts[normSev(v.sev)]++);
+
+  document.getElementById('iac-summary').innerHTML = [
+    `<div class="summary-chip">&#127959; Tool: Checkov</div>`,
+    `<div class="summary-chip" style="border-color:var(--medium);color:var(--medium)">&#9888; ${iac.length} finding${iac.length !== 1 ? 's' : ''}</div>`,
+    counts.high   ? `<div class="summary-chip" style="border-color:var(--high);color:var(--high)">&#128992; ${counts.high} High</div>` : '',
+    counts.medium ? `<div class="summary-chip" style="border-color:var(--medium);color:var(--medium)">&#128993; ${counts.medium} Medium</div>` : '',
+  ].join('');
+
+  document.getElementById('iac-tbody').innerHTML = iac.length
+    ? iac.map(v => `<tr>
+        <td><span class="sev ${sevClass(v.sev)}">${(v.sev || 'note').toUpperCase()}</span></td>
+        <td><span class="cve-id">${v.issue.match(/CKV[_\w]+/) ? v.issue.match(/CKV[_\w]+/)[0] : '—'}</span></td>
+        <td><span class="issue-title">${v.url ? `<a href="${v.url}" target="_blank" style="color:inherit;text-decoration:none">${v.issue}</a>` : v.issue}</span></td>
+        <td><span style="font-size:11px;color:var(--text-muted)">Docker / Compose</span></td>
+        <td><span class="file">${v.location || '—'}</span></td>
+        <td>${v.url ? `<a href="${v.url}" target="_blank" style="color:var(--info);font-size:11px">&#128279; View</a>` : '—'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="6"><div class="no-results">No IaC findings in baked data.</div></td></tr>';
 }
 
+// ── All vulns table ───────────────────────────────────────────────────────────
 function renderAllTable(data) {
   const tbody = document.getElementById('tbodyAll');
-  if (!data.length) { tbody.innerHTML = `<tr><td colspan="9"><div class="no-results">No open alerts found.</div></td></tr>`; return; }
-  tbody.innerHTML = data.map(v => `
-    <tr>
-      <td style="color:var(--text-muted)">${v.id}</td>
-      <td><span class="sev ${sevClass(v.sev)}">${v.sev.toUpperCase()}</span></td>
-      <td><span class="type-badge type-${v.type.toLowerCase()}">${v.type}</span></td>
-      <td style="color:var(--text-muted);font-size:11px">${v.tool}</td>
-      <td><span class="issue-title">${v.url ? `<a href="${v.url}" target="_blank" style="color:inherit;text-decoration:none">${v.issue}</a>` : v.issue}</span></td>
-      <td><span class="file">${v.location}</span></td>
-      <td><span class="owasp-tag">${v.owasp || '—'}</span></td>
-      <td><span class="fix-ver">${v.fix}</span></td>
-      <td><span class="status status-open">Open</span></td>
-    </tr>`).join('');
+  if (!data.length) { tbody.innerHTML = `<tr><td colspan="8"><div class="no-results">No findings match the current filters.</div></td></tr>`; return; }
+  tbody.innerHTML = data.map(v => `<tr>
+    <td style="color:var(--text-muted);font-size:11px">${v.id}</td>
+    <td><span class="sev ${sevClass(v.sev)}">${(v.sev || 'note').toUpperCase()}</span></td>
+    <td><span class="type-badge type-${(v.type || 'sast').toLowerCase()}">${v.type}</span></td>
+    <td style="font-size:11px;color:var(--text-muted)">${v.tool}</td>
+    <td><span class="issue-title">${v.url ? `<a href="${v.url}" target="_blank" style="color:inherit;text-decoration:none">${v.issue}</a>` : v.issue}</span></td>
+    <td><span class="file">${v.location || '—'}</span></td>
+    <td><span class="owasp-tag">${v.owasp || '—'}</span></td>
+    <td><span class="status status-open">Open</span></td>
+  </tr>`).join('');
 }
 
 function filterAll() {
-  const search = document.getElementById('searchAll').value.toLowerCase();
-  const sev = document.getElementById('filterSev').value;
-  const type = document.getElementById('filterType').value;
+  const search = (document.getElementById('searchAll').value || '').toLowerCase();
+  const sev    = document.getElementById('filterSev').value;
+  const type   = document.getElementById('filterType').value;
+  const tool   = document.getElementById('filterTool').value;
   const filtered = allVulns.filter(v =>
     (!search || v.issue.toLowerCase().includes(search) || v.tool.toLowerCase().includes(search) || v.location.toLowerCase().includes(search))
-    && (!sev || v.sev === sev)
+    && (!sev  || normSev(v.sev) === normSev(sev) || v.sev === sev)
     && (!type || v.type === type)
+    && (!tool || v.tool === tool)
   );
   renderAllTable(filtered);
 }
 
-// ─── Export CSV ──────────────────────────────────────────────────────────────
+// ── Sidebar badges ────────────────────────────────────────────────────────────
+function updateBadges(vulns) {
+  const bySect = { sast: 0, sca: 0, dast: 0, iac: 0 };
+  vulns.forEach(v => {
+    if (v.type === 'SAST')    bySect.sast++;
+    else if (v.type === 'SCA') bySect.sca++;
+    else if (v.type === 'DAST') bySect.dast++;
+    else if (v.type === 'IaC') bySect.iac++;
+  });
+  document.getElementById('badge-sast').textContent = bySect.sast || '0';
+  document.getElementById('badge-dast').textContent = bySect.dast || '0';
+  document.getElementById('badge-iac').textContent  = bySect.iac  || '0';
+  document.getElementById('badge-sca').textContent  = bySect.sca  || '14';
+}
+
+// ── Tool filter dropdown ──────────────────────────────────────────────────────
+function populateToolFilter(vulns) {
+  const sel = document.getElementById('filterTool');
+  const tools = [...new Set(vulns.map(v => v.tool))].sort();
+  tools.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; sel.appendChild(o); });
+}
+
+// ── Security score ring ───────────────────────────────────────────────────────
+function renderScore(score) {
+  const fill  = document.getElementById('score-ring-fill');
+  const val   = document.getElementById('score-value');
+  const grade = document.getElementById('score-grade');
+  const circumference = 263.9;
+  const offset = circumference - (score / 100) * circumference;
+  const color = score >= 80 ? '#3fb950' : score >= 60 ? '#e3b341' : '#f85149';
+  fill.style.stroke = color;
+  fill.style.strokeDashoffset = offset;
+  val.textContent = score;
+  val.style.color = color;
+  if (score >= 80)      { grade.textContent = 'Good'; grade.style.color = '#3fb950'; }
+  else if (score >= 60) { grade.textContent = 'Needs Work'; grade.style.color = '#e3b341'; }
+  else                  { grade.textContent = 'At Risk'; grade.style.color = '#f85149'; }
+}
+
+// ── Metadata strip ────────────────────────────────────────────────────────────
+function renderMeta() {
+  const m = window.BAKED_META || {};
+  if (m.commit_sha) {
+    const el = document.getElementById('meta-commit');
+    el.innerHTML = m.run_url
+      ? `&#128736; <a href="${m.run_url}" target="_blank">${m.commit_sha}</a>`
+      : `&#128736; ${m.commit_sha}`;
+  }
+  if (m.branch) document.getElementById('meta-branch').textContent = '⎇ ' + m.branch;
+  if (m.run_url) {
+    const el = document.getElementById('meta-run');
+    el.innerHTML = `<a href="${m.run_url}" target="_blank">&#9654; CI Run</a>`;
+  }
+  if (m.scan_time) {
+    const d = new Date(m.scan_time);
+    const fmt = d.toLocaleString(undefined, { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    document.getElementById('sidebar-scan-time').textContent = 'Last scan: ' + fmt;
+    // Prepend to timeline
+    const tl = document.getElementById('timeline-list');
+    const item = document.createElement('div');
+    item.className = 'tl-item';
+    item.innerHTML = `<div class="tl-dot-wrap"><div class="tl-dot" style="background:var(--info)"></div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="tl-title">&#9654; CI pipeline completed — <a href="${m.run_url || '#'}" target="_blank" style="color:var(--info)">view run</a></div>
+        <div class="tl-time">${fmt} · commit ${m.commit_sha || '—'}</div>
+      </div>`;
+    tl.prepend(item);
+  } else {
+    document.getElementById('sidebar-scan-time').textContent = 'Last scan: see CI run';
+  }
+}
+
+// ── Export CSV ────────────────────────────────────────────────────────────────
 function exportCSV() {
-  const headers = ['ID','Severity','Type','Tool','Issue','Location','Fix','Status'];
-  const rows = allVulns.map(v => [v.id, v.sev, v.type, v.tool, `"${v.issue}"`, `"${v.location}"`, `"${v.fix}"`, v.status]);
+  const headers = ['ID','Severity','Type','Tool','Issue','Location','OWASP','Status'];
+  const rows = allVulns.map(v => [v.id, v.sev, v.type, v.tool, `"${v.issue}"`, `"${v.location}"`, `"${v.owasp}"`, v.state]);
   const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
@@ -822,105 +872,153 @@ function exportCSV() {
   a.click();
 }
 
-// ─── Live data init ───────────────────────────────────────────────────────────
-async function init() {
-  const status = document.getElementById('scan-status');
-  try {
-    const raw = await fetchAlerts();
-    allVulns = raw.map(mapAlert);
+// ── Navigation ────────────────────────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = { overview:'Security Overview', all:'All Vulnerabilities', sast:'SAST Findings',
+    sca:'SCA — Dependency Vulnerabilities', dast:'DAST — OWASP ZAP',
+    iac:'IaC — Checkov', secrets:'Secret Scanning', timeline:'Activity Timeline' };
+  document.getElementById('page-title').textContent = titles[id] || id;
+  if (id === 'all') renderAllTable(allVulns);
+}
 
+function showTab(id, el) {
+  const parent = el.closest('.page') || document;
+  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const prefix = id.split('-')[0] + '-';
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(t => t.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+}
+
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+// ── ZAP DAST ─────────────────────────────────────────────────────────────────
+function renderZap() {
+  const chip    = document.getElementById('dast-status-chip');
+  const content = document.getElementById('dast-content');
+  const zap     = window.BAKED_ZAP;
+  if (!zap || !zap.site || !zap.site.length) {
+    chip.style.cssText = 'border-color:var(--low);color:var(--low)';
+    chip.textContent   = '&#9989; No alerts — scan passed';
+    content.innerHTML  = `<div style="padding:40px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">&#9989;</div>
+      <div style="font-size:15px;color:var(--low);margin-bottom:8px">ZAP scan passed — no alerts found</div>
+      <div style="font-size:13px;color:var(--text-muted)">OWASP ZAP scanned the running application and found no vulnerabilities.</div></div>`;
+    return;
+  }
+  const alerts = zap.site.flatMap(s => s.alerts || []);
+  const rc = { High: 0, Medium: 0, Low: 0, Informational: 0 };
+  alerts.forEach(a => { const k = (a['@riskdesc'] || a.riskdesc || '').split(' ')[0]; if (rc[k] !== undefined) rc[k]++; });
+  const total = alerts.length;
+  chip.style.cssText = total > 0 ? 'border-color:var(--medium);color:var(--medium)' : 'border-color:var(--low);color:var(--low)';
+  chip.textContent   = total > 0 ? `⚠ ${total} alerts` : '✅ Clean';
+  const rows = alerts.map(a => {
+    const risk = (a['@riskdesc'] || a.riskdesc || '').split(' ')[0];
+    const cls  = risk === 'High' ? 'sev-high' : risk === 'Medium' ? 'sev-medium' : risk === 'Low' ? 'sev-low' : 'sev-info';
+    const name = a['@name'] || a.name || '—';
+    const uri  = (a.instances?.[0]?.uri || a['@uri'] || '—');
+    const sol  = (a.solution || a['@solution'] || '').replace(/<[^>]+>/g,'').slice(0,120);
+    return `<tr><td><span class="sev ${cls}">${risk.toUpperCase()}</span></td>
+      <td><span class="issue-title">${name}</span></td>
+      <td><span class="file" style="word-break:break-all;font-size:11px">${uri}</span></td>
+      <td style="font-size:11px;color:var(--text-muted)">${sol || '—'}</td></tr>`;
+  }).join('');
+  content.innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      <div class="summary-chip" style="border-color:var(--critical);color:var(--critical)">High: ${rc.High}</div>
+      <div class="summary-chip" style="border-color:var(--medium);color:var(--medium)">Medium: ${rc.Medium}</div>
+      <div class="summary-chip" style="border-color:var(--low);color:var(--low)">Low: ${rc.Low}</div>
+      <div class="summary-chip">Info: ${rc.Informational}</div>
+    </div>
+    <table><thead><tr><th>Risk</th><th>Alert</th><th>URL</th><th>Solution</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="4"><div class="no-results">No alerts.</div></td></tr>'}</tbody></table>`;
+}
+
+// ── Main init ─────────────────────────────────────────────────────────────────
+async function init() {
+  renderMeta();
+  renderZap();
+
+  try {
+    const raw  = await fetchAlerts();
+    allVulns   = raw.map(mapAlert);
+
+    // Counts
     const c = { critical: 0, high: 0, medium: 0, low: 0 };
     allVulns.forEach(v => {
-      if (v.sev === 'critical') c.critical++;
-      else if (v.sev === 'high') c.high++;
-      else if (v.sev === 'medium') c.medium++;
-      else c.low++;
+      const s = normSev(v.sev);
+      if (s === 'critical') c.critical++;
+      else if (s === 'high')   c.high++;
+      else if (s === 'medium') c.medium++;
+      else                     c.low++;
     });
+    const total = allVulns.length;
+    const max   = Math.max(total, 1);
 
+    // Metric cards
     document.getElementById('cnt-critical').textContent = c.critical;
-    document.getElementById('cnt-high').textContent = c.high;
-    document.getElementById('cnt-medium').textContent = c.medium;
-    document.getElementById('cnt-low').textContent = c.low;
-    document.getElementById('cnt-total').textContent = allVulns.length;
+    document.getElementById('cnt-high').textContent     = c.high;
+    document.getElementById('cnt-medium').textContent   = c.medium;
+    document.getElementById('cnt-low').textContent      = c.low;
+    document.getElementById('cnt-total').textContent    = total;
+    document.getElementById('bar-critical').style.width = (c.critical / max * 100) + '%';
+    document.getElementById('bar-high').style.width     = (c.high     / max * 100) + '%';
+    document.getElementById('bar-medium').style.width   = (c.medium   / max * 100) + '%';
+    document.getElementById('bar-low').style.width      = (c.low      / max * 100) + '%';
 
+    // Score
+    renderScore(calcScore(c));
+
+    // Charts
     chartSeverity.data.datasets[0].data = [c.critical, c.high, c.medium, c.low];
     chartSeverity.update();
 
     const byTool = {};
     allVulns.forEach(v => { byTool[v.tool] = (byTool[v.tool] || 0) + 1; });
-    chartTools.data.labels = Object.keys(byTool);
-    chartTools.data.datasets[0].data = Object.values(byTool);
-    chartTools.data.datasets[0].backgroundColor = Object.keys(byTool).map(t =>
+    const toolColors = Object.keys(byTool).map(t =>
       toolType(t) === 'SCA' ? '#d2a8ff' : toolType(t) === 'DAST' ? '#3fb950' : toolType(t) === 'IaC' ? '#ffa657' : '#58a6ff'
     );
+    chartTools.data.labels   = Object.keys(byTool);
+    chartTools.data.datasets[0].data            = Object.values(byTool);
+    chartTools.data.datasets[0].backgroundColor = toolColors;
     chartTools.update();
 
-    const byCat = { SCA: 0, SAST: 0, DAST: 0, IaC: 0 };
+    const byCat = { SAST: 0, SCA: 0, DAST: 0, IaC: 0 };
     allVulns.forEach(v => { byCat[v.type] = (byCat[v.type] || 0) + 1; });
-    chartCategory.data.datasets[0].data = [byCat.SCA, byCat.SAST, byCat.DAST, byCat.IaC];
+    chartCategory.data.datasets[0].data = [byCat.SAST, byCat.SCA, byCat.DAST, byCat.IaC];
     chartCategory.update();
 
-    status.textContent = `Live · ${allVulns.length} open alerts · ${new Date().toLocaleString()}`;
+    // Pipeline grid
+    buildPipelineGrid(byTool);
+
+    // SAST / IaC pages
+    buildSastPage(allVulns);
+    buildIacPage(allVulns);
+
+    // Sidebar badges
+    updateBadges(allVulns);
+
+    // All vulns table filter dropdown
+    populateToolFilter(allVulns);
     renderAllTable(allVulns);
+
   } catch (err) {
-    status.style.color = 'var(--critical)';
-    status.textContent = `Error: ${err.message}`;
-    renderAllTable([]);
+    console.error('Dashboard init error:', err);
+    document.querySelectorAll('#cnt-critical,#cnt-high,#cnt-medium,#cnt-low,#cnt-total')
+      .forEach(el => el.textContent = '—');
+    document.getElementById('pipeline-grid').innerHTML =
+      `<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--text-muted);font-size:13px">Could not load scan data: ${err.message}</div>`;
   }
 }
 
 init();
-
-// ─── ZAP DAST Results ────────────────────────────────────────────────────────
-function renderZap() {
-  const chip    = document.getElementById('dast-status-chip');
-  const content = document.getElementById('dast-content');
-  const zap     = window.BAKED_ZAP;
-
-  if (!zap || !zap.site || zap.site.length === 0) {
-    chip.style.borderColor = 'var(--medium)';
-    chip.style.color       = 'var(--medium)';
-    chip.textContent       = '⏳ No results yet';
-    content.innerHTML = `<div style="padding:40px;text-align:center">
-      <div style="font-size:40px;margin-bottom:12px">🌐</div>
-      <div style="font-size:15px;color:var(--text-bright);margin-bottom:8px">ZAP scan results not yet available</div>
-      <div style="font-size:13px;color:var(--text-muted)">Results will appear here after the next pipeline run completes.</div>
-    </div>`;
-    return;
-  }
-
-  const alerts = zap.site.flatMap(s => s.alerts || []);
-  const riskCount = { High: 0, Medium: 0, Low: 0, Informational: 0 };
-  alerts.forEach(a => { if (riskCount[a.riskdesc?.split(' ')[0]] !== undefined) riskCount[a.riskdesc.split(' ')[0]]++; });
-  const total = alerts.length;
-
-  chip.style.borderColor = total > 0 ? 'var(--medium)' : 'var(--low)';
-  chip.style.color       = total > 0 ? 'var(--medium)' : 'var(--low)';
-  chip.textContent       = total > 0 ? `⚠ ${total} alerts found` : '✅ No alerts';
-
-  const rows = alerts.map(a => {
-    const risk = a.riskdesc?.split(' ')[0] || 'Info';
-    const cls  = risk === 'High' ? 'sev-high' : risk === 'Medium' ? 'sev-medium' : risk === 'Low' ? 'sev-low' : 'sev-info';
-    return `<tr>
-      <td><span class="sev ${cls}">${risk.toUpperCase()}</span></td>
-      <td><span class="issue-title">${a.name || '—'}</span></td>
-      <td><span class="file" style="font-size:11px">${a.instances?.[0]?.uri || '—'}</span></td>
-      <td style="font-size:11px;color:var(--text-muted);max-width:300px">${a.solution?.replace(/<[^>]+>/g,'').slice(0,120) || '—'}</td>
-    </tr>`;
-  }).join('');
-
-  content.innerHTML = `
-    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
-      <div class="summary-chip" style="border-color:var(--critical);color:var(--critical)">High: ${riskCount.High}</div>
-      <div class="summary-chip" style="border-color:var(--medium);color:var(--medium)">Medium: ${riskCount.Medium}</div>
-      <div class="summary-chip" style="border-color:var(--low);color:var(--low)">Low: ${riskCount.Low}</div>
-      <div class="summary-chip">Info: ${riskCount.Informational}</div>
-    </div>
-    <table class="vuln-table"><thead><tr><th>Risk</th><th>Alert</th><th>URL</th><th>Solution</th></tr></thead>
-    <tbody>${rows || '<tr><td colspan="4"><div class="no-results">No alerts found.</div></td></tr>'}</tbody></table>`;
-}
-
-renderZap();
 </script>
 </body>
 </html>

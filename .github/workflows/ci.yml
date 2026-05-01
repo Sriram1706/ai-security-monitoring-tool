@@ -426,9 +426,17 @@ jobs:
               except Exception as e:
                   print(f'Warning loading ZAP report: {e}')
 
+          from datetime import datetime
+          meta = {
+              'commit_sha':  os.environ.get('GITHUB_SHA', '')[:7],
+              'branch':      os.environ.get('GITHUB_REF_NAME', 'main'),
+              'run_url':     f"https://github.com/{repo}/actions/runs/{os.environ.get('GITHUB_RUN_ID', '')}",
+              'scan_time':   datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+          }
           injection = (
               f'<script>window.BAKED_ALERTS={json.dumps(alerts)};</script>\n'
-              f'<script>window.BAKED_ZAP={json.dumps(zap_data)};</script>'
+              f'<script>window.BAKED_ZAP={json.dumps(zap_data)};</script>\n'
+              f'<script>window.BAKED_META={json.dumps(meta)};</script>'
           )
           with open('security-dashboard.html') as f:
               html = f.read()
