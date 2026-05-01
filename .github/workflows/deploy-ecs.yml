@@ -21,9 +21,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          # Deploy the exact commit that passed CI on main (never a PR branch)
-          # nosemgrep: yaml.github-actions.security.workflow-run-target-code-checkout.workflow-run-target-code-checkout
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          # workflow_run only triggers on main branch (branches: [main]), never on PRs — safe to use head_sha
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }} # nosemgrep: yaml.github-actions.security.workflow-run-target-code-checkout.workflow-run-target-code-checkout
 
       # ── AWS Setup ────────────────────────────────────────────────────────
       - name: Configure AWS credentials
