@@ -49,7 +49,6 @@
         { "name": "JWT_SECRET",                "value": "REPLACE_JWT_SECRET" },
         { "name": "ACCESS_TOKEN_MINUTES",      "value": "120" },
         { "name": "BOOTSTRAP_ADMIN_EMAIL",     "value": "admin@ai-sec.local" },
-        { "name": "BOOTSTRAP_ADMIN_PASSWORD",  "value": "REPLACE_DB_PASSWORD" },
         { "name": "SQLITE_DB_PATH",            "value": "/tmp/security.db" },
         { "name": "OPENAI_API_KEY",            "value": "REPLACE_OPENAI_API_KEY" },
         { "name": "THREAT_INTEL_ENABLED",      "value": "false" },

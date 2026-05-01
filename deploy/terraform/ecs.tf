@@ -50,7 +50,6 @@ resource "aws_ecs_task_definition" "app" {
         { name = "JWT_SECRET",               value = var.jwt_secret },
         { name = "ACCESS_TOKEN_MINUTES",     value = "120" },
         { name = "BOOTSTRAP_ADMIN_EMAIL",    value = "admin@ai-sec.local" },
-        { name = "BOOTSTRAP_ADMIN_PASSWORD", value = var.db_password },
         { name = "SQLITE_DB_PATH",           value = "/tmp/security.db" },
         { name = "OPENAI_API_KEY",           value = var.openai_api_key },
         { name = "THREAT_INTEL_ENABLED",     value = "false" },

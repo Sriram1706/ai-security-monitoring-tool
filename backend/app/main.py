@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_fastapi_instrumentator import Instrumentator
 from sqlalchemy import text
 
-from app.auth import hash_password
+from app.auth import hash_password, verify_password
 from app.config import settings
 from app.database import Base, engine
 from app.database import SessionLocal
@@ -65,6 +65,9 @@ def on_startup():
                     role="admin",
                 )
             )
+            db.commit()
+        elif not verify_password(settings.bootstrap_admin_password, existing.hashed_password):
+            existing.hashed_password = hash_password(settings.bootstrap_admin_password)
             db.commit()
     finally:
         db.close()
