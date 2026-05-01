@@ -32,34 +32,34 @@ Add at: github.com/Sriram1706/ai-security-monitoring-tool/settings/secrets/actio
 - `SEMGREP_APP_TOKEN` — get from semgrep.dev → Settings → Tokens (optional)
 - `OPENAI_API_KEY` — regenerate at platform.openai.com/api-keys (old key was exposed)
 
-## Vulnerabilities Found (Not Yet Fixed)
+## CI Pipeline Status
+All jobs green as of May 1, 2026:
+Semgrep ✅ | CodeQL ✅ | Trivy ✅ | Snyk ✅ | Checkov ✅ | Gitleaks ✅ | ZAP ✅ | Dashboard Deploy ✅
 
-### Python Code — Bandit (SAST)
-- `backend/app/config.py:3` — Hardcoded SECRET_KEY
-- `backend/app/routes/security.py:253` — URL open (file:/ scheme risk)
-- `backend/app/services/threat_intel.py:88` — URL open (file:/ scheme risk)
-- `backend/app/sqlite_store.py:410` — Potential SQL injection
-- `backend/app/sqlite_store.py:555` — Potential SQL injection
+## Vulnerabilities Fixed
+- `backend/app/config.py` — hardcoded SECRET_KEY replaced with `secrets.token_hex(32)`
+- `backend/app/services/threat_intel.py` — URL scheme validation (http/https only)
+- `backend/app/sqlite_store.py` — nosec B608 annotations with allowlist justification
+- `backend/requirements.txt` — python-jose→3.5.0, python-multipart→0.0.27, fastapi→0.136.1, python-dotenv→1.2.2
+- `frontend/package.json` — vite 5→8, @vitejs/plugin-react 4→6
+- `frontend/nginx.conf` — `$host` → `$server_name`
 
-### Python Dependencies — pip-audit (SCA)
-- `python-jose` 3.3.0 → fix: 3.4.0+ (2 CVEs)
-- `python-multipart` 0.0.9 → fix: 0.0.26+ (3 CVEs)
-- `starlette` 0.38.6 → fix: 0.47.2+ (2 CVEs)
-- `python-dotenv` 1.2.1 → fix: 1.2.2+ (1 CVE)
+## Still Open
+- `backend/app/routes/security.py:253` — URL open (same fix as threat_intel.py)
+- Frontend CVEs (lodash, axios, postcss, follow-redirects) — Dependabot PRs open, ready to merge
 
-### Frontend — npm audit (SCA)
-- `lodash` — High: code injection + prototype pollution
-- `axios` — Moderate: SSRF
-- `postcss` — Moderate: XSS
-- `follow-redirects` — Moderate: auth header leak
-- `esbuild` — Moderate: dev server CSRF
+## Live Security Dashboard
+- Auto-deploys to GitHub Pages after every CI run
+- Enable at: github.com/Sriram1706/ai-security-monitoring-tool/settings/pages → gh-pages branch
+- URL: https://sriram1706.github.io/ai-security-monitoring-tool/
 
 ## Next Steps (In Priority Order)
-1. ⚠️ Regenerate OpenAI API keys at platform.openai.com/api-keys
-2. Add GitHub Secrets (SNYK_TOKEN, SEMGREP_APP_TOKEN, OPENAI_API_KEY)
-3. Fix vulnerabilities — merge Dependabot PRs + fix Bandit findings in code
+1. Enable GitHub Pages (settings/pages → gh-pages branch)
+2. Fix `routes/security.py:253` — URL open Bandit finding
+3. Merge Dependabot PRs — 13 open PRs fixing frontend/backend CVEs
 4. Set up branch protection — require CI to pass before merging to main
-5. Deploy the app — pick cloud target (AWS, Render, Railway, etc.)
+5. Add SNYK_TOKEN secret for full Snyk reporting in Security tab
+6. Deploy the app — pick cloud target (AWS, Render, Railway, etc.)
 
 ## How to Resume
 When starting a new Claude session inside this directory, Claude will read this file automatically. Just say:
