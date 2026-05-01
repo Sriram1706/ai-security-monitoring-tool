@@ -58,7 +58,7 @@ export default function DataSecurity() {
       setLoading(true);
       setError("");
       try {
-        const res = await apiFetch("http://localhost:8000/logs?limit=1000&sort_by=timestamp&sort_dir=desc");
+        const res = await apiFetch("/api/logs?limit=1000&sort_by=timestamp&sort_dir=desc");
         if (!res.ok) {
           throw new Error(`Failed to load data security logs (${res.status})`);
         }

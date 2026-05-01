@@ -41,10 +41,10 @@ export default function Reports({ globalFilters = {}, onOpenDrilldown = () => {}
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      apiFetch("http://localhost:8000/logs?limit=1000").then((res) => (res.ok ? res.json() : [])),
-      apiFetch("http://localhost:8000/alerts").then((res) => (res.ok ? res.json() : [])),
-      apiFetch("http://localhost:8000/analytics").then((res) => (res.ok ? res.json() : {})),
-      apiFetch("http://localhost:8000/threat-summary").then((res) => (res.ok ? res.json() : {})),
+      apiFetch("/api/logs?limit=1000").then((res) => (res.ok ? res.json() : [])),
+      apiFetch("/api/alerts").then((res) => (res.ok ? res.json() : [])),
+      apiFetch("/api/analytics").then((res) => (res.ok ? res.json() : {})),
+      apiFetch("/api/threat-summary").then((res) => (res.ok ? res.json() : {})),
     ])
       .then(([logsData, alertsData, analyticsData, summaryData]) => {
         setLogs(Array.isArray(logsData) ? logsData : []);

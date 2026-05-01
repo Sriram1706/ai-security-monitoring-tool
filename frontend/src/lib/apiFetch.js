@@ -44,7 +44,7 @@ export async function apiFetch(url, options = {}) {
     try {
       return new URL(url).origin;
     } catch {
-      return "http://localhost:8000";
+      return "/api";
     }
   })();
 

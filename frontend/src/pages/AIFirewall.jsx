@@ -69,8 +69,8 @@ export default function AIFirewall() {
       setError("");
       try {
         const [policyRes, logsRes] = await Promise.all([
-          apiFetch("http://localhost:8000/policy/control-plane"),
-          apiFetch("http://localhost:8000/logs?limit=1000"),
+          apiFetch("/api/policy/control-plane"),
+          apiFetch("/api/logs?limit=1000"),
         ]);
         const policyJson = policyRes.ok ? await policyRes.json() : null;
         const logsJson = logsRes.ok ? await logsRes.json() : [];
@@ -89,8 +89,8 @@ export default function AIFirewall() {
 
   const refreshData = async () => {
     const [policyRes, logsRes] = await Promise.all([
-      apiFetch("http://localhost:8000/policy/control-plane"),
-      apiFetch("http://localhost:8000/logs?limit=1000"),
+      apiFetch("/api/policy/control-plane"),
+      apiFetch("/api/logs?limit=1000"),
     ]);
     const policyJson = policyRes.ok ? await policyRes.json() : null;
     const logsJson = logsRes.ok ? await logsRes.json() : [];
@@ -103,7 +103,7 @@ export default function AIFirewall() {
     setActionBusyId(logId);
     setActionFeedback("");
     try {
-      const res = await apiFetch(`http://localhost:8000/logs/${logId}/action`, {
+      const res = await apiFetch(`/api/logs/${logId}/action`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action, note: `Analyst action from AI Firewall: ${action}` }),

@@ -149,7 +149,7 @@ export default function Requests() {
     if (sortBy) params.set("sort_by", sortBy);
     if (sortDir) params.set("sort_dir", sortDir);
     params.set("limit", "1000");
-    const logsUrl = `http://localhost:8000/logs?${params.toString()}`;
+    const logsUrl = `/api/logs?${params.toString()}`;
 
     apiFetch(logsUrl)
       .then((res) => res.json())
@@ -158,7 +158,7 @@ export default function Requests() {
   }, [riskType, severity, provider, minRiskScore, maxRiskScore, sortBy, sortDir]);
 
   useEffect(() => {
-    apiFetch("http://localhost:8000/code-findings/summary")
+    apiFetch("/api/code-findings/summary")
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error("summary failed"))))
       .then((data) =>
         setCodeSummary({

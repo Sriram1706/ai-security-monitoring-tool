@@ -74,7 +74,7 @@ export default function SupplyChain({ onOpenDrilldown = () => {} }) {
 
     try {
       const suffix = forceRefresh ? "?refresh=1" : "";
-      const res = await apiFetch(`http://localhost:8000/supply-chain${suffix}`);
+      const res = await apiFetch(`/api/supply-chain${suffix}`);
       if (!res.ok) {
         const detail = await res.text().catch(() => "");
         throw new Error(`Failed to load supply-chain risks (${res.status})${detail ? `: ${detail}` : ""}`);
@@ -102,7 +102,7 @@ export default function SupplyChain({ onOpenDrilldown = () => {} }) {
     if (vulnProvider) params.set("provider", vulnProvider);
     if (vulnSource) params.set("source", vulnSource);
     params.set("limit", "1000");
-    apiFetch(`http://localhost:8000/code-findings?${params.toString()}`)
+    apiFetch(`/api/code-findings?${params.toString()}`)
       .then((res) => (res.ok ? res.json() : []))
       .then((json) => setVulnRows(Array.isArray(json) ? json : []))
       .catch(() => setVulnRows([]));
@@ -110,7 +110,7 @@ export default function SupplyChain({ onOpenDrilldown = () => {} }) {
 
   useEffect(() => {
     if (loading) return;
-    apiFetch("http://localhost:8000/code-findings/summary")
+    apiFetch("/api/code-findings/summary")
       .then((res) => (res.ok ? res.json() : null))
       .then((json) =>
         setVulnSummary({

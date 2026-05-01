@@ -14,7 +14,7 @@ export default function Risks({ globalFilters = {}, setGlobalFilters = () => {},
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
-    apiFetch("http://localhost:8000/logs")
+    apiFetch("/api/logs")
       .then((res) => res.json())
       .then((data) => setLogs(Array.isArray(data) ? data : []))
       .catch(() => setLogs([]));

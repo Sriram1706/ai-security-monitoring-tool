@@ -104,7 +104,7 @@ function buildChatGptMirrorScript(endpoint, mirrorKey = "") {
 }
 
 function buildCursorDemoCommand(endpoint, mirrorKey = "") {
-  const safeEndpoint = String(endpoint || "http://localhost:8000/mirror/cursor");
+  const safeEndpoint = String(endpoint || (typeof window !== "undefined" ? window.location.origin + "/api/mirror/cursor" : "/api/mirror/cursor"));
   const safeKey = String(mirrorKey || "");
   const mirrorArg = safeKey ? ` --mirror-key "${safeKey}"` : "";
   return `cd "/Users/snarayanan/Documents/AI Security/ai_security_monitoring_tool"
@@ -122,7 +122,7 @@ export default function Integrations() {
     email: "",
     webhook: "",
   });
-  const defaultGatewayBase = "http://localhost:8000";
+  const defaultGatewayBase = window.location.origin + "/api";
   const defaultGatewayProcessPrompt = `${defaultGatewayBase}/process-prompt`;
   const defaultMirrorEndpoint = `${defaultGatewayBase}/mirror/chatgpt`;
   const [gatewayApiKey, setGatewayApiKey] = useState(localStorage.getItem("token") || "");

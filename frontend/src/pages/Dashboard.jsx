@@ -168,47 +168,47 @@ export default function Dashboard({ role, globalFilters = {}, setGlobalFilters =
       limit: params?.limit || LOG_FETCH_LIMIT,
       ...params,
     };
-    const data = await fetchJson(withNoCache("http://localhost:8000/logs", queryParams), "logs");
+    const data = await fetchJson(withNoCache("/api/logs", queryParams), "logs");
     const rows = Array.isArray(data) ? data : [];
     setLogs(rows);
     return rows;
   };
 
   const fetchAnalytics = async () => {
-    const data = await fetchJson(withNoCache("http://localhost:8000/analytics"), "analytics");
+    const data = await fetchJson(withNoCache("/api/analytics"), "analytics");
     setMetrics(data || {});
     return data || {};
   };
 
   const fetchSocAlerts = async () => {
-    const data = await fetchJson(withNoCache("http://localhost:8000/alerts"), "alerts");
+    const data = await fetchJson(withNoCache("/api/alerts"), "alerts");
     const rows = Array.isArray(data) ? data : [];
     setSocAlerts(rows);
     return rows;
   };
 
   const fetchThreatSummary = async () => {
-    const data = await fetchJson(withNoCache("http://localhost:8000/threat-summary"), "threat-summary");
+    const data = await fetchJson(withNoCache("/api/threat-summary"), "threat-summary");
     setThreatSummary(data || {});
     return data || {};
   };
 
   const fetchAidrIncidents = async () => {
-    const data = await fetchJson(withNoCache("http://localhost:8000/aidr/incidents", { limit: 50 }), "aidr incidents");
+    const data = await fetchJson(withNoCache("/api/aidr/incidents", { limit: 50 }), "aidr incidents");
     const rows = Array.isArray(data) ? data : [];
     setAidrIncidents(rows);
     return rows;
   };
 
   const fetchAttackPath = async () => {
-    const data = await fetchJson(withNoCache("http://localhost:8000/aidr/attack-path", { limit: 200 }), "aidr attack path");
+    const data = await fetchJson(withNoCache("/api/aidr/attack-path", { limit: 200 }), "aidr attack path");
     const rows = Array.isArray(data) ? data : [];
     setAttackPathEdges(rows);
     return rows;
   };
 
   const fetchThreatIntelStatus = async () => {
-    const data = await fetchJson(withNoCache("http://localhost:8000/threat-intel/status"), "threat-intel status");
+    const data = await fetchJson(withNoCache("/api/threat-intel/status"), "threat-intel status");
     setThreatIntelStatus(data || null);
     return data || null;
   };
@@ -363,7 +363,7 @@ export default function Dashboard({ role, globalFilters = {}, setGlobalFilters =
     const id = alert?.id;
     if (!id) return;
     try {
-      const res = await apiFetch(`http://localhost:8000/logs/${id}/action`, {
+      const res = await apiFetch(`/api/logs/${id}/action`, {
         method: "POST",
         body: JSON.stringify({ action: "FLAG" }),
       });
@@ -383,7 +383,7 @@ export default function Dashboard({ role, globalFilters = {}, setGlobalFilters =
     const id = alert?.id;
     if (!id) return;
     try {
-      const res = await apiFetch(`http://localhost:8000/logs/${id}/action`, {
+      const res = await apiFetch(`/api/logs/${id}/action`, {
         method: "POST",
         body: JSON.stringify({ action: "BLOCK" }),
       });
@@ -429,7 +429,7 @@ export default function Dashboard({ role, globalFilters = {}, setGlobalFilters =
 
   const processPromptInternal = async (prompt, refreshAfter = true) => {
       const loginAndGetToken = async () => {
-        const loginRes = await fetch("http://localhost:8000/auth/login", {
+        const loginRes = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -448,7 +448,7 @@ export default function Dashboard({ role, globalFilters = {}, setGlobalFilters =
         return fresh;
       };
 
-      const callProcessPrompt = async (token) => fetch("http://localhost:8000/process-prompt", {
+      const callProcessPrompt = async (token) => fetch("/api/process-prompt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -562,7 +562,7 @@ export default function Dashboard({ role, globalFilters = {}, setGlobalFilters =
     if (!url) return;
     setUrlScanBusy(true);
     try {
-      const res = await apiFetch("http://localhost:8000/scan-url", {
+      const res = await apiFetch("/api/scan-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url, provider: "openai" }),

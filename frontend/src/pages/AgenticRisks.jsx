@@ -287,7 +287,7 @@ export default function AgenticRisks() {
   const [selectedIncident, setSelectedIncident] = useState(null);
 
   useEffect(() => {
-    apiFetch("http://localhost:8000/logs?limit=1000")
+    apiFetch("/api/logs?limit=1000")
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => setLogs(Array.isArray(data) ? data : []))
       .catch(() => setLogs([]));

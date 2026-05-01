@@ -31,7 +31,7 @@ export default function Posture({ globalFilters = {}, setGlobalFilters = () => {
   const [selectedIssue, setSelectedIssue] = useState(null);
 
   useEffect(() => {
-    apiFetch("http://localhost:8000/logs")
+    apiFetch("/api/logs")
       .then((res) => res.json())
       .then((data) => setLogs(Array.isArray(data) ? data : []))
       .catch(() => setLogs([]));
