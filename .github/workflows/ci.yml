@@ -231,6 +231,9 @@ jobs:
             exit 1
           }
 
+      - name: Fix ZAP workspace permissions
+        run: chmod 777 ${{ github.workspace }}
+
       - name: OWASP ZAP Baseline Scan
         uses: zaproxy/action-baseline@v0.12.0
         with:
