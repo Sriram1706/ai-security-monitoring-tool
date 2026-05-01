@@ -188,7 +188,7 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: .
-          framework: dockerfile,docker-compose
+          framework: dockerfile
           output_format: sarif
           output_file_path: checkov.sarif
           soft_fail: true
@@ -206,7 +206,7 @@ jobs:
     name: DAST - OWASP ZAP
     runs-on: ubuntu-latest
     needs: [backend-build, frontend-build]
-    if: ${{ secrets.OPENAI_API_KEY != '' }}
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 

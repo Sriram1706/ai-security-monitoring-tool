@@ -4,6 +4,7 @@ import threading
 import time
 from datetime import datetime
 from urllib import request
+from urllib.parse import urlparse
 
 from app.config import settings
 from app.metrics import record_threat_intel_update
@@ -84,8 +85,12 @@ def run_threat_intel_update() -> dict:
 
     for feed in feeds:
         try:
+            parsed = urlparse(feed)
+            if parsed.scheme not in {"http", "https"}:
+                errors.append(f"{feed}: Only http/https URLs are allowed")
+                continue
             req = request.Request(feed, headers={"User-Agent": "ai-security-monitor/1.0"})
-            with request.urlopen(req, timeout=max(1, settings.url_fetch_timeout_sec)) as resp:
+            with request.urlopen(req, timeout=max(1, settings.url_fetch_timeout_sec)) as resp:  # nosec B310
                 body = resp.read(settings.url_fetch_max_bytes).decode("utf-8", errors="ignore")
             merged.extend(_parse_feed_payload(body))
         except Exception as exc:

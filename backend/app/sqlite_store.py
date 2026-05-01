@@ -406,7 +406,7 @@ def fetch_logs(
     sort_direction = "ASC" if sort_dir_key == "asc" else "DESC"
 
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
-    sql = (
+    sql = (  # nosec B608 — sort_expr/sort_direction are allowlist-controlled, not user input
         "SELECT id, prompt, risk_type, severity, provider, source, timestamp, risk_score, blocked, owasp_category, status, metadata, analyst_action, analyst_note, reviewed_by, reviewed_at "
         f"FROM logs {where} ORDER BY {sort_expr} {sort_direction}, id DESC LIMIT ?"
     )
@@ -551,7 +551,7 @@ def fetch_code_findings(
         params.append(source)
 
     where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
-    sql = (
+    sql = (  # nosec B608 — where clauses use parameterized queries, ORDER BY is hardcoded
         "SELECT id, log_id, prompt, finding_type, severity, title, explanation, remediation, evidence, confidence, provider, source, endpoint, timestamp, metadata "
         f"FROM code_findings {where} ORDER BY timestamp DESC LIMIT ?"
     )

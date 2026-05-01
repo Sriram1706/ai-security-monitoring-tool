@@ -1,6 +1,6 @@
+import secrets
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-SECRET_KEY = "my-super-secret-key-123"
 ALGORITHM = "HS256"
 
 
@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     app_name: str = "AI Security Monitoring Tool"
     environment: str = "dev"
     database_url: str = "sqlite:///./security.db"
-    jwt_secret: str = SECRET_KEY
+    jwt_secret: str = secrets.token_hex(32)
     jwt_algorithm: str = ALGORITHM
     access_token_minutes: int = 60
     bootstrap_admin_email: str = "admin@ai-sec.local"
