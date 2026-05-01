@@ -1,0 +1,13 @@
+{
+  "last_capture_utc": "2026-04-05T15:22:51.191079+00:00",
+  "last_note": "Scheduled auto capture",
+  "include_roots": [
+    "frontend",
+    "backend",
+    "scripts",
+    "docs",
+    "deploy"
+  ],
+  "max_files": 120,
+  "last_count": 1
+}

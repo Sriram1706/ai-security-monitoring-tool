@@ -1,0 +1,298 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(255, 99, 132, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "type": "row",
+      "title": "Threat Intelligence",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false,
+      "id": 100
+    },
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Total Requests (5m)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 1 },
+      "targets": [{ "expr": "increase(ai_requests_total[5m])", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 50 }, { "color": "red", "value": 150 } ] } }, "overrides": [] }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Block Rate (%)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 4, "y": 1 },
+      "targets": [{ "expr": "(ai_blocked_requests_total / clamp_min(ai_requests_total, 1)) * 100", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "unit": "percent", "decimals": 2, "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 20 }, { "color": "red", "value": 50 } ] } }, "overrides": [] }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Injection Rate (1m)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 8, "y": 1 },
+      "targets": [{ "expr": "rate(ai_prompt_injection_total[1m])", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "unit": "reqps", "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 0.05 }, { "color": "red", "value": 0.2 } ] } }, "overrides": [] }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Current Risk Score",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 4, "x": 12, "y": 1 },
+      "targets": [{ "expr": "ai_risk_score", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "colorMode": "value", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0, "max": 100, "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 40 }, { "color": "red", "value": 70 } ] } }, "overrides": [] }
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "System Status",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 8, "x": 16, "y": 1 },
+      "targets": [{ "expr": "ai_risk_score", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "orientation": "horizontal", "colorMode": "background", "graphMode": "none", "textMode": "value_and_name" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "range", "options": { "from": 0, "to": 39.999, "result": { "text": "GREEN" } } },
+            { "type": "range", "options": { "from": 40, "to": 69.999, "result": { "text": "YELLOW" } } },
+            { "type": "range", "options": { "from": 70, "to": 1000, "result": { "text": "RED" } } }
+          ],
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": []
+      }
+    },
+
+    {
+      "type": "row",
+      "title": "SOC Alerts",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "collapsed": false,
+      "id": 101
+    },
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "CRITICAL Alerts",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 8, "x": 0, "y": 7 },
+      "targets": [{ "expr": "increase(ai_blocked_requests_total[5m])", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "colorMode": "background", "graphMode": "none" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] } }, "overrides": [] }
+    },
+    {
+      "id": 11,
+      "type": "stat",
+      "title": "HIGH Alerts",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 8, "x": 8, "y": 7 },
+      "targets": [{ "expr": "increase(ai_prompt_injection_total[5m]) + increase(ai_jailbreak_attempts_total[5m])", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 12,
+      "type": "table",
+      "title": "Alert Type / Count / Last Triggered",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 5, "w": 8, "x": 16, "y": 7 },
+      "targets": [
+        { "expr": "increase(ai_prompt_injection_total[5m])", "legendFormat": "Injection", "refId": "A", "instant": true },
+        { "expr": "increase(ai_jailbreak_attempts_total[5m])", "legendFormat": "Jailbreak", "refId": "B", "instant": true },
+        { "expr": "increase(ai_exfiltration_attempts_total[5m])", "legendFormat": "Exfiltration", "refId": "C", "instant": true }
+      ],
+      "options": { "showHeader": true }
+    },
+
+    {
+      "type": "row",
+      "title": "Attack Monitoring",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 12 },
+      "collapsed": false,
+      "id": 102
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "Live Injection Rate",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 13 },
+      "targets": [{ "expr": "rate(ai_prompt_injection_total[1m])", "refId": "A" }],
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "single" } },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineInterpolation": "smooth" } }, "overrides": [] }
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Blocked Requests Trend",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 13 },
+      "targets": [{ "expr": "rate(ai_blocked_requests_total[1m])", "refId": "A" }],
+      "fieldConfig": { "defaults": { "custom": { "lineInterpolation": "smooth" } }, "overrides": [] }
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Jailbreak Attempts",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 21 },
+      "targets": [{ "expr": "rate(ai_jailbreak_attempts_total[1m])", "refId": "A" }],
+      "fieldConfig": { "defaults": { "custom": { "lineInterpolation": "smooth" } }, "overrides": [] }
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Data Exfiltration Attempts",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 21 },
+      "targets": [{ "expr": "rate(ai_exfiltration_attempts_total[1m])", "refId": "A" }],
+      "fieldConfig": { "defaults": { "custom": { "lineInterpolation": "smooth" } }, "overrides": [] }
+    },
+
+    {
+      "type": "row",
+      "title": "Risk Analysis",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 29 },
+      "collapsed": false,
+      "id": 103
+    },
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "Risk Score Trend",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 },
+      "targets": [{ "expr": "ai_risk_score", "refId": "A" }],
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 100,
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "yellow", "value": 40 }, { "color": "red", "value": 70 } ] }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 31,
+      "type": "piechart",
+      "title": "Risk Distribution (LOW/MEDIUM/HIGH/CRITICAL)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 },
+      "targets": [
+        { "expr": "sum((ai_risk_score < 40) * 1)", "legendFormat": "LOW", "refId": "A" },
+        { "expr": "sum((ai_risk_score >= 40 and ai_risk_score < 60) * 1)", "legendFormat": "MEDIUM", "refId": "B" },
+        { "expr": "sum((ai_risk_score >= 60 and ai_risk_score < 80) * 1)", "legendFormat": "HIGH", "refId": "C" },
+        { "expr": "sum((ai_risk_score >= 80) * 1)", "legendFormat": "CRITICAL", "refId": "D" }
+      ],
+      "options": { "legend": { "displayMode": "list", "placement": "right" }, "pieType": "donut", "tooltip": { "mode": "single" } }
+    },
+
+    {
+      "type": "row",
+      "title": "Anomaly Detection",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 38 },
+      "collapsed": false,
+      "id": 104
+    },
+    {
+      "id": 40,
+      "type": "timeseries",
+      "title": "Current vs Baseline Injection Rate",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 39 },
+      "targets": [
+        { "expr": "rate(ai_prompt_injection_total[1m])", "legendFormat": "Current", "refId": "A" },
+        { "expr": "avg_over_time(rate(ai_prompt_injection_total[1m])[15m:1m])", "legendFormat": "Baseline", "refId": "B" }
+      ]
+    },
+    {
+      "id": 41,
+      "type": "stat",
+      "title": "ANOMALY DETECTED",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 39 },
+      "targets": [{ "expr": "(rate(ai_prompt_injection_total[1m]) > (2 * avg_over_time(rate(ai_prompt_injection_total[1m])[15m:1m])))", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "values": false }, "colorMode": "background", "graphMode": "none", "textMode": "value_and_name" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "NORMAL" }, "1": { "text": "ANOMALY DETECTED" } } }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 1 } ] }
+        },
+        "overrides": []
+      }
+    },
+
+    {
+      "type": "row",
+      "title": "Advanced Visuals",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 47 },
+      "collapsed": false,
+      "id": 105
+    },
+    {
+      "id": 50,
+      "type": "heatmap",
+      "title": "Attack Heatmap (Injection/Jailbreak/Exfiltration)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 9, "w": 16, "x": 0, "y": 48 },
+      "targets": [
+        { "expr": "rate(ai_prompt_injection_total[1m])", "legendFormat": "injection", "refId": "A" },
+        { "expr": "rate(ai_jailbreak_attempts_total[1m])", "legendFormat": "jailbreak", "refId": "B" },
+        { "expr": "rate(ai_exfiltration_attempts_total[1m])", "legendFormat": "exfiltration", "refId": "C" }
+      ]
+    },
+    {
+      "id": 51,
+      "type": "table",
+      "title": "Drill-down: Security Logs",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 9, "w": 8, "x": 16, "y": 48 },
+      "targets": [
+        { "expr": "ai_requests_total", "legendFormat": "Click to open logs", "refId": "A", "instant": true }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "links": [
+            {
+              "title": "Open Detailed Logs",
+              "url": "http://localhost:8000/docs#/security/get_logs_logs_get"
+            }
+          ]
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["ai-security", "soc", "command-center"],
+  "templating": { "list": [] },
+  "time": { "from": "now-1h", "to": "now" },
+  "title": "AI Security Command Center (SOC)",
+  "uid": "ai-security-soc",
+  "version": 3
+}
