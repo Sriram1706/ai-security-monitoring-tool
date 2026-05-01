@@ -260,6 +260,98 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # ──────────────────────────────────────────────
+  # DEPLOY — Build & push to AWS ECS (main only)
+  # ──────────────────────────────────────────────
+  deploy-ecs:
+    name: Deploy to ECS
+    runs-on: ubuntu-latest
+    needs: [backend-build, frontend-build, sast-semgrep, sast-codeql, sca-snyk, sca-trivy, iac-checkov, secret-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push backend image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG:    ${{ github.sha }}
+        run: |
+          docker build -t "$ECR_REGISTRY/ai-security-backend:$IMAGE_TAG" backend/
+          docker push "$ECR_REGISTRY/ai-security-backend:$IMAGE_TAG"
+
+      - name: Build and push frontend image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG:    ${{ github.sha }}
+        run: |
+          docker build --build-arg NGINX_CONF=nginx.ecs.conf \
+            -t "$ECR_REGISTRY/ai-security-frontend:$IMAGE_TAG" frontend/
+          docker push "$ECR_REGISTRY/ai-security-frontend:$IMAGE_TAG"
+
+      - name: Fill task definition template
+        env:
+          ECR_REGISTRY:  ${{ steps.ecr-login.outputs.registry }}
+          IMAGE_TAG:     ${{ github.sha }}
+          AWS_REGION:    ${{ secrets.AWS_REGION }}
+          DB_PASSWORD:   ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET:    ${{ secrets.JWT_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          sed \
+            -e "s|REPLACE_ECR_REGISTRY|$ECR_REGISTRY|g" \
+            -e "s|REPLACE_IMAGE_TAG|$IMAGE_TAG|g" \
+            -e "s|REPLACE_AWS_REGION|$AWS_REGION|g" \
+            -e "s|REPLACE_DB_PASSWORD|$DB_PASSWORD|g" \
+            -e "s|REPLACE_JWT_SECRET|$JWT_SECRET|g" \
+            -e "s|REPLACE_OPENAI_API_KEY|${OPENAI_API_KEY:-}|g" \
+            deploy/ecs/task-definition.json > /tmp/task-def.json
+
+      - name: Register ECS task definition
+        id: register-task
+        run: |
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file:///tmp/task-def.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "arn=$TASK_DEF_ARN" >> "$GITHUB_OUTPUT"
+
+      - name: Update ECS service
+        run: |
+          aws ecs update-service \
+            --cluster ai-security-cluster \
+            --service ai-security-service \
+            --task-definition "${{ steps.register-task.outputs.arn }}" \
+            --force-new-deployment \
+            --query 'service.serviceName' --output text
+
+      - name: Wait for deployment to stabilize
+        run: |
+          aws ecs wait services-stable \
+            --cluster ai-security-cluster \
+            --services ai-security-service
+
+      - name: Print deployed URL
+        run: |
+          INSTANCE_IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=ecs-ai-security" "Name=instance-state-name,Values=running" \
+            --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+          echo "========================================"
+          echo "  Deployed to: http://$INSTANCE_IP"
+          echo "========================================"
+
+  # ──────────────────────────────────────────────
   # DASHBOARD — Deploy to GitHub Pages
   # ──────────────────────────────────────────────
   deploy-dashboard:
