@@ -618,16 +618,11 @@ SECRET_KEY = os.environ["JWT_SECRET_KEY"]
     <div id="page-dast" class="page">
       <div class="summary-row">
         <div class="summary-chip">🌐 Tool: OWASP ZAP</div>
-        <div class="summary-chip" style="border-color:var(--critical);color:var(--critical)">⛔ Scan not yet run</div>
+        <div class="summary-chip" id="dast-status-chip" style="border-color:var(--medium);color:var(--medium)">Loading…</div>
       </div>
-      <div class="table-wrap" style="padding:40px;text-align:center">
+      <div id="dast-content" class="table-wrap" style="padding:40px;text-align:center">
         <div style="font-size:40px;margin-bottom:12px">🌐</div>
-        <div style="font-size:15px;color:var(--text-bright);margin-bottom:8px">DAST scan pending</div>
-        <div style="font-size:13px;color:var(--text-muted);max-width:480px;margin:0 auto 20px">OWASP ZAP needs a live running app to scan. Add the <code style="color:var(--info)">OPENAI_API_KEY</code> secret to GitHub → Settings → Secrets → Actions to enable the DAST pipeline job.</div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;text-align:left;max-width:420px;margin:0 auto">
-          <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase">Steps to enable DAST</div>
-          <div style="font-size:12px;line-height:2;color:var(--text)">1. Regenerate OpenAI API key at platform.openai.com<br>2. Go to repo Settings → Secrets → Actions<br>3. Add secret: <code style="color:var(--info)">OPENAI_API_KEY</code><br>4. Push any commit to trigger pipeline<br>5. ZAP results will appear here</div>
-        </div>
+        <div style="font-size:15px;color:var(--text-muted)">Loading ZAP results…</div>
       </div>
     </div>
 
@@ -875,6 +870,57 @@ async function init() {
 }
 
 init();
+
+// ─── ZAP DAST Results ────────────────────────────────────────────────────────
+function renderZap() {
+  const chip    = document.getElementById('dast-status-chip');
+  const content = document.getElementById('dast-content');
+  const zap     = window.BAKED_ZAP;
+
+  if (!zap || !zap.site || zap.site.length === 0) {
+    chip.style.borderColor = 'var(--medium)';
+    chip.style.color       = 'var(--medium)';
+    chip.textContent       = '⏳ No results yet';
+    content.innerHTML = `<div style="padding:40px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">🌐</div>
+      <div style="font-size:15px;color:var(--text-bright);margin-bottom:8px">ZAP scan results not yet available</div>
+      <div style="font-size:13px;color:var(--text-muted)">Results will appear here after the next pipeline run completes.</div>
+    </div>`;
+    return;
+  }
+
+  const alerts = zap.site.flatMap(s => s.alerts || []);
+  const riskCount = { High: 0, Medium: 0, Low: 0, Informational: 0 };
+  alerts.forEach(a => { if (riskCount[a.riskdesc?.split(' ')[0]] !== undefined) riskCount[a.riskdesc.split(' ')[0]]++; });
+  const total = alerts.length;
+
+  chip.style.borderColor = total > 0 ? 'var(--medium)' : 'var(--low)';
+  chip.style.color       = total > 0 ? 'var(--medium)' : 'var(--low)';
+  chip.textContent       = total > 0 ? `⚠ ${total} alerts found` : '✅ No alerts';
+
+  const rows = alerts.map(a => {
+    const risk = a.riskdesc?.split(' ')[0] || 'Info';
+    const cls  = risk === 'High' ? 'sev-high' : risk === 'Medium' ? 'sev-medium' : risk === 'Low' ? 'sev-low' : 'sev-info';
+    return `<tr>
+      <td><span class="sev ${cls}">${risk.toUpperCase()}</span></td>
+      <td><span class="issue-title">${a.name || '—'}</span></td>
+      <td><span class="file" style="font-size:11px">${a.instances?.[0]?.uri || '—'}</span></td>
+      <td style="font-size:11px;color:var(--text-muted);max-width:300px">${a.solution?.replace(/<[^>]+>/g,'').slice(0,120) || '—'}</td>
+    </tr>`;
+  }).join('');
+
+  content.innerHTML = `
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      <div class="summary-chip" style="border-color:var(--critical);color:var(--critical)">High: ${riskCount.High}</div>
+      <div class="summary-chip" style="border-color:var(--medium);color:var(--medium)">Medium: ${riskCount.Medium}</div>
+      <div class="summary-chip" style="border-color:var(--low);color:var(--low)">Low: ${riskCount.Low}</div>
+      <div class="summary-chip">Info: ${riskCount.Informational}</div>
+    </div>
+    <table class="vuln-table"><thead><tr><th>Risk</th><th>Alert</th><th>URL</th><th>Solution</th></tr></thead>
+    <tbody>${rows || '<tr><td colspan="4"><div class="no-results">No alerts found.</div></td></tr>'}</tbody></table>`;
+}
+
+renderZap();
 </script>
 </body>
 </html>
