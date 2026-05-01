@@ -161,9 +161,12 @@ tr:hover td { background: #1c2128; cursor: pointer; }
 
 /* Tabs */
 .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
-.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; }
-.tab:hover { color: var(--text); }
+.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; user-select: none; }
+.tab:hover { color: var(--text); background: var(--surface2); border-radius: 6px 6px 0 0; }
 .tab.active { color: var(--info); border-bottom-color: var(--info); }
+.nav-item { cursor: pointer; }
+.pipeline-card { cursor: default; transition: border-color 0.15s; }
+.pipeline-card:hover { border-color: var(--info); }
 
 /* Summary row */
 .summary-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -363,6 +366,7 @@ tr:hover td { background: #1c2128; cursor: pointer; }
         <div class="tab active" onclick="showTab('sast-codeql',this)">CodeQL</div>
         <div class="tab" onclick="showTab('sast-manual',this)">Bandit / Semgrep (manual)</div>
       </div>
+      <div class="tab-body">
       <div id="sast-codeql">
         <div class="table-wrap table-scroll">
           <table>
@@ -434,6 +438,7 @@ sort_expr validated against allowlist
           </table>
         </div>
       </div>
+      </div><!-- /tab-body -->
     </div>
 
     <!-- SCA -->
@@ -442,6 +447,7 @@ sort_expr validated against allowlist
         <div class="tab active" onclick="showTab('sca-py',this)">Python — 8 CVEs</div>
         <div class="tab" onclick="showTab('sca-npm',this)">Frontend — 6 CVEs</div>
       </div>
+      <div class="tab-body">
       <div id="sca-py">
         <div class="summary-row">
           <div class="summary-chip">&#128230; 4 vulnerable packages</div>
@@ -492,6 +498,7 @@ sort_expr validated against allowlist
           </table>
         </div>
       </div>
+      </div><!-- /tab-body -->
     </div>
 
     <!-- DAST -->
@@ -610,8 +617,9 @@ function sevWeight(s) {
 
 // ── Security score ────────────────────────────────────────────────────────────
 function calcScore(c) {
-  const penalty = c.critical * 25 + c.high * 8 + c.medium * 2 + c.low * 0.5;
-  return Math.max(0, Math.round(100 - penalty));
+  // Soft exponential decay so a realistic number of findings gives a visible score
+  const raw = 100 * Math.exp(-0.08 * c.critical - 0.018 * c.high - 0.005 * c.medium - 0.001 * c.low);
+  return Math.max(0, Math.round(raw));
 }
 
 // ── Fetch alerts (baked at CI time, GitHub API fallback) ──────────────────────
@@ -652,20 +660,34 @@ function mapAlert(a) {
 
 // ── Charts ────────────────────────────────────────────────────────────────────
 Chart.defaults.color = '#8b949e';
+const tooltipDefaults = {
+  backgroundColor: '#161b22',
+  borderColor: '#30363d',
+  borderWidth: 1,
+  titleColor: '#f0f6fc',
+  bodyColor: '#c9d1d9',
+  padding: 10,
+  cornerRadius: 6,
+};
 const chartSeverity = new Chart(document.getElementById('chartSeverity'), {
   type: 'doughnut',
-  data: { labels: ['Critical','High','Medium','Low/Info'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#f85149','#ff7b72','#e3b341','#3fb950'], borderWidth: 0, hoverOffset: 6 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
+  data: { labels: ['Critical','High','Medium','Low/Info'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#f85149','#ff7b72','#e3b341','#3fb950'], borderWidth: 0, hoverOffset: 8 }] },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } }, tooltip: { ...tooltipDefaults } } }
 });
 const chartTools = new Chart(document.getElementById('chartTools'), {
   type: 'bar',
-  data: { labels: [], datasets: [{ label: 'Findings', data: [], backgroundColor: [], borderRadius: 4, borderSkipped: false }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#21262d' } }, y: { grid: { color: '#21262d' }, ticks: { stepSize: 1 } } } }
+  data: { labels: [], datasets: [{ label: 'Findings', data: [], backgroundColor: [], borderRadius: 4, borderSkipped: false, hoverBackgroundColor: '#f0f6fc33' }] },
+  options: { responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: { legend: { display: false }, tooltip: { ...tooltipDefaults } },
+    scales: { x: { grid: { color: '#21262d' } }, y: { grid: { color: '#21262d' }, ticks: { stepSize: 1 } } } }
 });
 const chartCategory = new Chart(document.getElementById('chartCategory'), {
   type: 'doughnut',
-  data: { labels: ['SAST','SCA','DAST','IaC'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#58a6ff','#d2a8ff','#3fb950','#ffa657'], borderWidth: 0, hoverOffset: 6 }] },
-  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } } } }
+  data: { labels: ['SAST','SCA','DAST','IaC'], datasets: [{ data: [0,0,0,0], backgroundColor: ['#58a6ff','#d2a8ff','#3fb950','#ffa657'], borderWidth: 0, hoverOffset: 8 }] },
+  options: { responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10, font: { size: 11 } } }, tooltip: { ...tooltipDefaults } } }
 });
 
 // ── Pipeline grid ─────────────────────────────────────────────────────────────
@@ -819,13 +841,14 @@ function renderScore(score) {
   const circumference = 263.9;
   const offset = circumference - (score / 100) * circumference;
   const color = score >= 80 ? '#3fb950' : score >= 60 ? '#e3b341' : '#f85149';
-  fill.style.stroke = color;
-  fill.style.strokeDashoffset = offset;
+  // Use setAttribute for reliable SVG property setting across all browsers
+  fill.setAttribute('stroke', color);
+  fill.setAttribute('stroke-dashoffset', offset);
   val.textContent = score;
   val.style.color = color;
-  if (score >= 80)      { grade.textContent = 'Good'; grade.style.color = '#3fb950'; }
+  if (score >= 80)      { grade.textContent = 'Good';       grade.style.color = '#3fb950'; }
   else if (score >= 60) { grade.textContent = 'Needs Work'; grade.style.color = '#e3b341'; }
-  else                  { grade.textContent = 'At Risk'; grade.style.color = '#f85149'; }
+  else                  { grade.textContent = 'At Risk';    grade.style.color = '#f85149'; }
 }
 
 // ── Metadata strip ────────────────────────────────────────────────────────────
@@ -886,12 +909,14 @@ function showPage(id, el) {
 }
 
 function showTab(id, el) {
-  const parent = el.closest('.page') || document;
-  parent.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (!target) return;
+  // Hide all sibling tab panels inside the nearest .tab-body container
+  const body = target.closest('.tab-body');
+  if (body) body.querySelectorAll(':scope > [id]').forEach(p => p.style.display = 'none');
+  target.style.display = 'block';
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  const prefix = id.split('-')[0] + '-';
-  document.querySelectorAll(`[id^="${prefix}"]`).forEach(t => t.style.display = 'none');
-  document.getElementById(id).style.display = 'block';
 }
 
 function toggleDetail(id) {
