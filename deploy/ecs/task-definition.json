@@ -52,7 +52,9 @@
         { "name": "SQLITE_DB_PATH",            "value": "/tmp/security.db" },
         { "name": "OPENAI_API_KEY",            "value": "REPLACE_OPENAI_API_KEY" },
         { "name": "THREAT_INTEL_ENABLED",      "value": "false" },
-        { "name": "SUPPLY_CHAIN_SCAN_ENABLED", "value": "true" }
+        { "name": "SUPPLY_CHAIN_SCAN_ENABLED", "value": "true" },
+        { "name": "GITHUB_TOKEN",              "value": "REPLACE_GITHUB_TOKEN" },
+        { "name": "GITHUB_WEBHOOK_SECRET",     "value": "ai-security-webhook-secret" }
       ],
       "dependsOn": [
         { "containerName": "db", "condition": "HEALTHY" }

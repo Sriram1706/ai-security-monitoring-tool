@@ -322,6 +322,7 @@ jobs:
           DB_PASSWORD:   ${{ secrets.DB_PASSWORD }}
           JWT_SECRET:    ${{ secrets.JWT_SECRET }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN_VALUE: ${{ secrets.PIPELINE_GITHUB_TOKEN }}
         run: |
           sed \
             -e "s|REPLACE_ECR_REGISTRY|$ECR_REGISTRY|g" \
@@ -330,6 +331,7 @@ jobs:
             -e "s|REPLACE_DB_PASSWORD|$DB_PASSWORD|g" \
             -e "s|REPLACE_JWT_SECRET|$JWT_SECRET|g" \
             -e "s|REPLACE_OPENAI_API_KEY|${OPENAI_API_KEY:-}|g" \
+            -e "s|REPLACE_GITHUB_TOKEN|${GITHUB_TOKEN_VALUE:-}|g" \
             deploy/ecs/task-definition.json > /tmp/task-def.json
 
       - name: Register ECS task definition
