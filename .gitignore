@@ -68,3 +68,5 @@ bandit-report.json
 zap-report.html
 zap-report.json
 dependency-check-report/
+mcp-env/
+mcp-servers/audit.log
