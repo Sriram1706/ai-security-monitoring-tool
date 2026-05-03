@@ -1888,7 +1888,7 @@ import threading
 import os as _os
 
 WEBHOOK_SECRET = _os.environ.get("GITHUB_WEBHOOK_SECRET", "ai-security-webhook-secret")
-PIPELINE_SCRIPT = _os.path.join(_os.path.dirname(__file__), "../../../../scripts/autonomous_pipeline.py")
+PIPELINE_SCRIPT = _os.path.join(_os.path.dirname(__file__), "../../scripts/autonomous_pipeline.py")
 
 
 def _verify_github_signature(payload: bytes, signature: str) -> bool:
