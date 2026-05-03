@@ -4,7 +4,8 @@ from typing import Annotated, Literal
 from urllib import request
 from urllib.parse import urlparse
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query
+import json
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -1878,3 +1879,55 @@ def ingest_aws_findings(
     db.commit()
     db.refresh(log)
     return {"id": log.id, "status": "ingested", "severity": log.severity, "risk_score": log.risk_score}
+
+
+import hmac
+import hashlib
+import subprocess
+import threading
+import os as _os
+
+WEBHOOK_SECRET = _os.environ.get("GITHUB_WEBHOOK_SECRET", "ai-security-webhook-secret")
+PIPELINE_SCRIPT = _os.path.join(_os.path.dirname(__file__), "../../../../scripts/autonomous_pipeline.py")
+
+
+def _verify_github_signature(payload: bytes, signature: str) -> bool:
+    expected = "sha256=" + hmac.new(
+        WEBHOOK_SECRET.encode(), payload, hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature or "")
+
+
+def _run_pipeline_async(repo_url: str, repo_name: str):
+    try:
+        subprocess.Popen(
+            ["python3", PIPELINE_SCRIPT, "--repo-url", repo_url, "--repo-name", repo_name],
+            stdout=open(f"/tmp/pipeline_{repo_name.replace('/', '_')}.log", "w"),
+            stderr=subprocess.STDOUT
+        )
+    except Exception as e:
+        print(f"Pipeline launch failed: {e}")
+
+
+@router.post("/webhook/github")
+async def github_webhook(request: Request):
+    """Receive GitHub push events and trigger autonomous deployment pipeline."""
+    body = await request.body()
+    signature = request.headers.get("X-Hub-Signature-256", "")
+
+    if not _verify_github_signature(body, signature):
+        raise HTTPException(status_code=401, detail="Invalid webhook signature")
+
+    payload = json.loads(body)
+    event = request.headers.get("X-GitHub-Event", "")
+
+    if event == "push" and payload.get("ref") == "refs/heads/main":
+        repo = payload.get("repository", {})
+        repo_url = repo.get("clone_url", "")
+        repo_name = repo.get("full_name", "")
+        thread = threading.Thread(target=_run_pipeline_async, args=(repo_url, repo_name))
+        thread.daemon = True
+        thread.start()
+        return {"status": "pipeline triggered", "repo": repo_name}
+
+    return {"status": "ignored", "event": event}
