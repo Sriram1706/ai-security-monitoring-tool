@@ -5,6 +5,7 @@ from urllib import request
 from urllib.parse import urlparse
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_user, require_admin
@@ -1846,3 +1847,34 @@ def reclassify_logs(
         "sqlite_rows_cleared": sqlite_rows_cleared,
         "sqlite_rows_written": sqlite_rows_written,
     }
+
+
+class AwsFindingIn(BaseModel):
+    source: str  # e.g. "aws-iam", "aws-s3", "aws-security-groups"
+    severity: str  # "critical", "high", "medium", "low"
+    risk_score: int
+    summary: str
+    findings: list[dict]
+
+
+@router.post("/ingest/aws-findings")
+def ingest_aws_findings(
+    payload: AwsFindingIn,
+    db: Session = Depends(get_db),
+):
+    """Ingest AWS security audit findings into the dashboard."""
+    log = ScanLog(
+        provider="aws-scanner",
+        model_name=payload.source,
+        prompt=f"AWS Security Audit: {payload.source}",
+        response=payload.summary,
+        risk_score=payload.risk_score,
+        severity=payload.severity,
+        findings=payload.findings,
+        extra_metadata={"source": payload.source, "type": "aws-audit"},
+        created_at=datetime.utcnow(),
+    )
+    db.add(log)
+    db.commit()
+    db.refresh(log)
+    return {"id": log.id, "status": "ingested", "severity": log.severity, "risk_score": log.risk_score}
