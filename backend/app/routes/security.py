@@ -1913,13 +1913,17 @@ def _run_pipeline_async(repo_url: str, repo_name: str):
 async def github_webhook(request: Request):
     """Receive GitHub push events and trigger autonomous deployment pipeline."""
     body = await request.body()
-    signature = request.headers.get("X-Hub-Signature-256", "")
+    event = request.headers.get("X-GitHub-Event", "")
 
+    # GitHub does not sign ping events — return 200 immediately
+    if event == "ping":
+        return {"status": "pong"}
+
+    signature = request.headers.get("X-Hub-Signature-256", "")
     if not _verify_github_signature(body, signature):
         raise HTTPException(status_code=401, detail="Invalid webhook signature")
 
     payload = json.loads(body)
-    event = request.headers.get("X-GitHub-Event", "")
 
     if event == "push" and payload.get("ref") == "refs/heads/main":
         repo = payload.get("repository", {})
