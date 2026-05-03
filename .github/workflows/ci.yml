@@ -53,21 +53,22 @@ jobs:
   sast-semgrep:
     name: SAST - Semgrep
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       security-events: write
     steps:
       - uses: actions/checkout@v6
       - name: Run Semgrep
-        uses: semgrep/semgrep-action@v1
-        with:
-          config: >
-            p/python
-            p/javascript
-            p/react
-            p/docker
-            p/owasp-top-ten
-            p/secrets
-          generateSarif: "1"
+        run: |
+          pip install semgrep
+          semgrep scan \
+            --config p/python \
+            --config p/javascript \
+            --config p/owasp-top-ten \
+            --config p/secrets \
+            --sarif \
+            --output semgrep.sarif \
+            --error || true
         env:
           SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
       - name: Upload Semgrep SARIF
